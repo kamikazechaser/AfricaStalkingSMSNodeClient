@@ -1,0 +1,12 @@
+<h1>Sending Results</h1>
+
+<p>{{session.message.title}}</p>
+<p>{{session.message.message}}</p>
+<p>{{results.Message}}</p>
+
+{{#each results.Recipients as |res|}}
+	<p>{{res.number}} - {{res.status}} - {{res.cost}}</p>
+{{/each}}
+
+
+<a href="/bulkSMS/new_message" class="btn btn-info">Send another message</a>

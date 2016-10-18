@@ -1,0 +1,48 @@
+<div class="row">
+	<div class="col-lg-3">
+		<div class="box">
+			<div class="box-header with-boarder">
+			<h3 class="text-center">Your message</h3>
+			</div>
+			<div class="box-body text-center">
+				{{session.message.title}}
+				<hr>
+				{{session.message.message}}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-9">
+		<form action="/bulkSMS/sendToMultipleGroups" method="POST">
+			<div class="box">
+				<div class="box-header">
+					<h4>Select group to send to</h4>
+				</div>
+				<div class="box-body">
+					<table class="table datatable table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>name</th>
+								<th>actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each groups as |group|}}
+								<tr>
+									<td>{{group.name}}</td>
+									<td >
+										<div class="btn-group pull-right">
+											<a href="{{specify_members_link}}" class="btn btn-info">Select Individual users</a>
+											<a href="{{send_link}}" class="btn btn-info">Send here</a>
+										</div>
+									</td>
+								</tr>
+							{{/each}}
+						</tbody>
+					</table>
+					
+				</div>
+			</div>
+		</form>
+		
+	</div>
+</div>

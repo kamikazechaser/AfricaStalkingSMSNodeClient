@@ -1,0 +1,9 @@
+<div class="btn-group pull-right">
+	{{#if downloadCSV}}
+		<a href="{{downloadCSV}}" download="{{fileName}}.xlsx" class="btn btn-info">Export Excel</a>
+	{{/if}}
+	{{!-- <a href="{{downloadPDF}}" download="{{fileName}}.pdf" class="btn btn-info">Export PDF</a> --}}
+	{{#if new}}
+	<a href="{{new}}" class="btn btn-info pull-right">Add</a>
+	{{/if}}
+</div>

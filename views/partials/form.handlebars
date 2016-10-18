@@ -1,0 +1,40 @@
+<form action="{{form.action}}" method="{{form.method}}" enctype="multipart/form-data">
+	<div class="box box-danger">
+		<div class="box-header with-border">
+			<h3 class="box-title">{{form.title}}</h3>
+		</div>
+		<div class="box-body">
+			{{#if errors}}
+			<div class="callout callout-danger">
+				{{#each errors as |error|}}
+				<p>{{error.msg}}</p>
+				{{/each}}
+			</div>
+			{{/if}}
+			<div class="row">
+				{{#each form.fields as |field|}}
+					{{#if field.select}}
+					<div class="col-xs-4">
+					<label for="{{field.name}}">{{field.name}}</label>
+					<select class="form-control select2" name="{{field.name}}" {{multiple}}>
+						{{#each field.selects as |select|}}
+							<option value={{select.value}} {{select.selected}}> {{select.text}}</option>
+						{{/each}}
+					</select>
+					</div>
+					{{else}}
+					<div class="col-xs-4">
+						<label for="{{field.name}}">{{field.name}}</label>
+						<input id="{{field.name}}" name="{{field.name}}" value="{{field.value}}" type="{{field.type}}" class="form-control {{field.add_class}}" placeholder="{{field.placeholder}}">
+					</div>
+					{{/if}}
+				{{/each}}
+			</div>
+		</div>
+		<!-- /.box-body -->
+		<div class="box-footer">
+			<button class="btn btn-default">Cancel</button>
+			<button type="submit" class="btn btn-info pull-right">Proceed</button>
+		</div>
+	</div>
+</form>
