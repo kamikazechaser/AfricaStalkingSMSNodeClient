@@ -14,272 +14,273 @@ var timeId = cassandra.types.TimeUuid //new instance based on current date timeI
 const contactPoint2 = process.env.OPENSHIFT_CASSANDRA_DB_HOST + ":" + process.env.OPENSHIFT_CASSANDRA_NATIVE_TRANSPORT_PORT
 
 var connectionOptions = {
-	contactPoints: [(process.env.OPENSHIFT_CASSANDRA_DB_HOST ? contactPoint2 : "localhost")],
-	keyspace: 'schoolmaster'
+    contactPoints: [(process.env.OPENSHIFT_CASSANDRA_DB_HOST ? contactPoint2 : "localhost")],
+    keyspace: 'schoolmaster'
 };
 
 var client = new cassandra.Client(connectionOptions);
 
 // Authentication and Authorization Middleware
 var auth = function(req, res, next) {
-	if (req.session)
-		return next();
-	else
-		return res.redirect("/")
+    if (req.session)
+        return next();
+    else
+        return res.redirect("/")
 };
 
 module.exports = function(app) {
-	app.route("/new_message")
-		.get(auth, (req, res) => {
+    app.route("/new_message")
+        .get(auth, (req, res) => {
 
-			const query = `select * from sms_master.messages`;
+            const query = `select * from sms_master.messages`;
 
-			client.execute(query, function(err, result) {
-				assert.ifError(err);
-				console.log(result.rows)
+            client.execute(query, function(err, result) {
+                assert.ifError(err);
+                console.log(result.rows)
 
-				result.rows.map((row) => {
-					row.use_link = "/bulkSMS/new_message/" + row.id
-				})
+                result.rows.map((row) => {
+                    row.use_link = "/new_message/" + row.id
+                })
 
-				var renderData = {
-					layout: "bulkSMS",
-					session: req.session,
-					savedMessages: result.rows,
-					status: "Online",
-					page: "Messages",
-					back: "Dashboard",
-					new: "/bulkSMS/messages/new",
-					form: {
-						title: "New message",
-						action: "",
-						method: "post",
-						fields: [{
-							name: "Title",
-							placeholder: " ",
-							type: "text"
-						}, {
-							name: "Content",
-							placeholder: " ",
-							type: "textarea"
-						}]
-					}
-				}
+                var renderData = {
+                    layout: "bulkSMS",
+                    session: req.session,
+                    savedMessages: result.rows,
+                    status: "Online",
+                    page: "Messages",
+                    back: "Dashboard",
+                    new: "/messages/new",
+                    form: {
+                        title: "New message",
+                        action: "",
+                        method: "post",
+                        fields: [{
+                            name: "Title",
+                            placeholder: " ",
+                            type: "text"
+                        }, {
+                            name: "Content",
+                            placeholder: " ",
+                            type: "textarea"
+                        }]
+                    }
+                }
 
-				res.render('bulkSMS/new_message/new', renderData);
-			});
-		})
-		.post(auth, (req, res) => {
-			req.session.message = {
-				title: req.body["Title"],
-				message: req.body["Content"]
-			}
+                res.render('new_message/new', renderData);
+            });
+        })
+        .post(auth, (req, res) => {
+            req.session.message = {
+                title: req.body["Title"],
+                message: req.body["Content"]
+            }
 
-			res.redirect("/bulkSMS/new_message/selectGroup")
-		})
+            res.redirect("/new_message/selectGroup")
+        })
 
-	app.get("/new_message/selectGroup", function(req, res) {
-		client.execute("select * from sms_master.groups", function(err, result) {
-			if (!err) {
-				console.log(result)
-				result.rows.map((row) => {
-					row.send_link = "/bulkSMS/send_message/" + row.id
-					row.specify_members_link = "/bulkSMS/controlled_send_message/" + row.id
-				})
+    app.get("/new_message/selectGroup", function(req, res) {
+        client.execute("select * from sms_master.groups", function(err, result) {
+            if (!err) {
+                console.log(result)
+                result.rows.map((row) => {
+                    row.send_link = "/send_message/" + row.id
+                    row.specify_members_link = "/controlled_send_message/" + row.id
+                })
 
-				res.render('bulkSMS/new_message/selectGroup', {
-					session: req.session,
-					groups: result.rows,
-					layout: "bulkSMS"
-				});
-			}
-		})
-	})
+                res.render('new_message/selectGroup', {
+                    session: req.session,
+                    groups: result.rows,
+                    layout: "bulkSMS"
+                });
+            }
+        })
+    })
 
-	app.route("/controlled_send_message/:group_id")
+    app.route("/controlled_send_message/:group_id")
 
-	.get(function(req, res) {
-		client.execute("select * from sms_master.groups_per_contact where group=? ALLOW FILTERING", [req.params.group_id], function(err, result) {
-			assert.ifError(err)
-			var finalcontacts = []
+    .get(function(req, res) {
+        client.execute("select * from sms_master.groups_per_contact where group=? ALLOW FILTERING", [req.params.group_id], function(err, result) {
+            assert.ifError(err)
+            var finalcontacts = []
 
-			async.filter(result.rows, function(contact, cb) {
-				console.log(contact)
-				client.execute("select * from sms_master.contacts where id=?", [contact.contact], function(err, contacts) {
-					assert.ifError(err)
-					contacts.rows.map((contact1) => {
-						finalcontacts.push({
-							id: contact1.id,
-							name: contact1.user_name,
-							phone_number: contact1.phone_number
-						})
-					})
+            async.filter(result.rows, function(contact, cb) {
+                console.log(contact)
+                client.execute("select * from sms_master.contacts where id=?", [contact.contact], function(err, contacts) {
+                    assert.ifError(err)
+                    contacts.rows.map((contact1) => {
+                        finalcontacts.push({
+                            id: contact1.id,
+                            name: contact1.user_name,
+                            phone_number: contact1.phone_number
+                        })
+                    })
 
-					cb()
-				})
+                    cb()
+                })
 
-			}, function(err) {
-				console.log(finalcontacts)
-				res.render('bulkSMS/new_message/selectUsersInGroup', {
-					session: req.session,
-					name: "Specify who to send the message to",
-					contacts: finalcontacts,
-					layout: "bulkSMS"
-				});
-			})
-
-
-		})
-	})
-
-	.post(function(req, res) {
-
-		var numbers = []
-		var convertedNumbers = []
-		Object.keys(req.body).map(function(number) {
-				if (Number(number)) {
-					numbers.push(number)
-				}
-			})
-			// send the numbers to send the sms.
-		numbers.map((number) => {
-			var phoneNumber = phoneUtil.parse(number, 'KE');
-
-			converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
-
-			convertedNumbers.push(converted)
-		})
-
-		var resultString = ""
-		convertedNumbers.map((num) => {
-			// remove the spaces
-			resultString = resultString + num.replace(/ /g, '') + ","
-		})
-
-		console.log(resultString)
-
-		var message = req.session.message.title + "\n\n" + req.session.message.message
-
-		getUsernamePassword("dctheta", function(err, results) {
-			console.log(results)
-			sendMessage([resultString, message, results[0], results[1]], (err, results) => {
-				console.log(results)
-					// reply on the callback of sending the messages
-				res.render('bulkSMS/new_message/send_report', {
-					session: req.session,
-					results: results.SMSMessageData,
-					layout: "bulkSMS"
-				});
-			})
-		})
-	})
-
-	app.get("/new_message/:saved_message_id", function(req, res) {
-		const query = `select * from sms_master.messages where id=?`;
-
-		client.execute(query, [req.params.saved_message_id], function(err, result) {
-			assert.ifError(err)
-			var message = result.rows[0]
-
-			req.session.message = {
-				title: message.title,
-				message: message.content
-			}
-
-			res.redirect("/bulkSMS/new_message/selectGroup")
-		})
-	})
-
-	// Require `PhoneNumberFormat`. 
-	var PNF = require('google-libphonenumber').PhoneNumberFormat;
-
-	// Get an instance of `PhoneNumberUtil`. 
-	var phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+            }, function(err) {
+                console.log(finalcontacts)
+                res.render('new_message/selectUsersInGroup', {
+                    session: req.session,
+                    name: "Specify who to send the message to",
+                    contacts: finalcontacts,
+                    layout: "bulkSMS"
+                });
+            })
 
 
-	app.get("/send_message/:group_id", function(req, res) {
-		client.execute("select * from sms_master.groups_per_contact where group=? ALLOW FILTERING", [req.params.group_id], function(err, result) {
-			assert.ifError(err)
-			if (!err) {
-				// console.log(result)
+        })
+    })
 
-				var phone_numbers = []
+    .post(function(req, res) {
 
-				async.eachSeries(result.rows, function(item, next) {
-					// console.log(item)
-					client.execute("select * from sms_master.contacts where id=?", [item.contact], function(err, result) {
-						// console.log(result)
-						if (!err) {
+        var numbers = []
+        var convertedNumbers = []
+        Object.keys(req.body).map(function(number) {
+                if (Number(number)) {
+                    numbers.push(number)
+                }
+            })
+            // send the numbers to send the sms.
+        numbers.map((number) => {
+            var phoneNumber = phoneUtil.parse(number, 'KE');
 
-							result.rows.map((row) => {
-								// Parse number with country code. 
-								// console.log(row.phone_number)
-								var phoneNumber = phoneUtil.parse(row.phone_number, 'KE');
+            converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
 
-								converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
+            convertedNumbers.push(converted)
+        })
 
-								phone_numbers.push(converted)
-							})
-						}
-						next()
-					})
+        var resultString = ""
+        convertedNumbers.map((num) => {
+            // remove the spaces
+            resultString = resultString + num.replace(/ /g, '') + ","
+        })
 
-				}, function(err) {
+        console.log(resultString)
 
-					console.log(phone_numbers)
-						// construct the string
-					var resultString = ""
-					phone_numbers.map((num) => {
-						// remove the spaces
-						resultString = resultString + num.replace(/ /g, '') + ","
-					})
+        var message = req.session.message.title + "\n\n" + req.session.message.message
 
-					console.log(resultString)
+        getUsernamePassword("dctheta", function(err, results) {
+            console.log(results)
+            sendMessage([resultString, message, results[0], results[1]], (err, results) => {
+                console.log(results)
+                    // reply on the callback of sending the messages
+                res.render('new_message/send_report', {
+                    session: req.session,
+                    results: results.SMSMessageData,
+                    message: results,
+                    layout: "bulkSMS"
+                });
+            })
+        })
+    })
 
-					var message = req.session.message.title + "\n\n" + req.session.message.message
+    app.get("/new_message/:saved_message_id", function(req, res) {
+        const query = `select * from sms_master.messages where id=?`;
 
-					sendMessage([resultString, message], (err, results) => {
+        client.execute(query, [req.params.saved_message_id], function(err, result) {
+            assert.ifError(err)
+            var message = result.rows[0]
 
-							console.log(results)
-								// reply on the callback of sending the messages
-							res.render('bulkSMS/new_message/send_report', {
-								session: req.session,
-								groups: result.rows,
-								results: results.SMSMessageData,
-								layout: "bulkSMS"
-							});
-						})
-						// test data
+            req.session.message = {
+                title: message.title,
+                message: message.content
+            }
 
-					// var responce = {
-					// 	"SMSMessageData": {
-					// 		"Message": "Sent to 2/2 Total Cost: KES 2.0000",
-					// 		"Recipients": [{
-					// 			"number": "+254711657108",
-					// 			"status": "Success",
-					// 			"cost": "KES 1.0000",
-					// 			"messageId": "ATXid_405d837f3991060dd2ef7c3bc717dab7"
-					// 		}, {
-					// 			"number": "+254703917754",
-					// 			"status": "Success",
-					// 			"cost": "KES 1.0000",
-					// 			"messageId": "ATXid_0ac5245b257fefead5d4a70b2c0a1ef5"
-					// 		}]
-					// 	}
-					// }
+            res.redirect("/new_message/selectGroup")
+        })
+    })
 
-					// res.render('bulkSMS/new_message/send_report', {
-					// 	session: req.session,
-					// 	groups: result.rows,
-					// 	results:responce.SMSMessageData,
-					// 	layout: "bulkSMS"
-					// });
-				})
+    // Require `PhoneNumberFormat`. 
+    var PNF = require('google-libphonenumber').PhoneNumberFormat;
 
-			}
-		})
+    // Get an instance of `PhoneNumberUtil`. 
+    var phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 
-	})
+
+    app.get("/send_message/:group_id", function(req, res) {
+        client.execute("select * from sms_master.groups_per_contact where group=? ALLOW FILTERING", [req.params.group_id], function(err, result) {
+            assert.ifError(err)
+            if (!err) {
+                // console.log(result)
+
+                var phone_numbers = []
+
+                async.eachSeries(result.rows, function(item, next) {
+                    // console.log(item)
+                    client.execute("select * from sms_master.contacts where id=?", [item.contact], function(err, result) {
+                        // console.log(result)
+                        if (!err) {
+
+                            result.rows.map((row) => {
+                                // Parse number with country code. 
+                                // console.log(row.phone_number)
+                                var phoneNumber = phoneUtil.parse(row.phone_number, 'KE');
+
+                                converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
+
+                                phone_numbers.push(converted)
+                            })
+                        }
+                        next()
+                    })
+
+                }, function(err) {
+
+                    console.log(phone_numbers)
+                        // construct the string
+                    var resultString = ""
+                    phone_numbers.map((num) => {
+                        // remove the spaces
+                        resultString = resultString + num.replace(/ /g, '') + ","
+                    })
+
+                    console.log(resultString)
+
+                    var message = req.session.message.title + "\n\n" + req.session.message.message
+
+                    sendMessage([resultString, message], (err, results) => {
+
+                            console.log(results)
+                                // reply on the callback of sending the messages
+                            res.render('new_message/send_report', {
+                                session: req.session,
+                                groups: result.rows,
+                                results: results.SMSMessageData,
+                                layout: "bulkSMS"
+                            });
+                        })
+                        // test data
+
+                    // var responce = {
+                    // 	"SMSMessageData": {
+                    // 		"Message": "Sent to 2/2 Total Cost: KES 2.0000",
+                    // 		"Recipients": [{
+                    // 			"number": "+254711657108",
+                    // 			"status": "Success",
+                    // 			"cost": "KES 1.0000",
+                    // 			"messageId": "ATXid_405d837f3991060dd2ef7c3bc717dab7"
+                    // 		}, {
+                    // 			"number": "+254703917754",
+                    // 			"status": "Success",
+                    // 			"cost": "KES 1.0000",
+                    // 			"messageId": "ATXid_0ac5245b257fefead5d4a70b2c0a1ef5"
+                    // 		}]
+                    // 	}
+                    // }
+
+                    // res.render('new_message/send_report', {
+                    // 	session: req.session,
+                    // 	groups: result.rows,
+                    // 	results:responce.SMSMessageData,
+                    // 	layout: "bulkSMS"
+                    // });
+                })
+
+            }
+        })
+
+    })
 }
 
 
@@ -291,64 +292,65 @@ var https = require('https');
 // Your login credentials
 
 function getUsernamePassword(id, cb) {
-	client.execute("select * sms_master.org_details", function(err, results) {
-		// body...
-		cb(err, [results.rows[0].username, results.rows[0].key])
-	})
+    client.execute("select * from sms_master.org_details;", function(err, results) {
+        console.log(results)
+        assert.ifError(err)
+            // body...
+        cb(err, [results.rows[0].username, results.rows[0].key])
+    })
 }
 
 function sendMessage(dataArray, cb) {
 
-	console.log(dataArray)
+    console.log(dataArray)
 
-	// Define the recipient numbers in a comma separated string
-	// Numbers should be in international format as shown
-	var to = dataArray[0]
+    // Define the recipient numbers in a comma separated string
+    // Numbers should be in international format as shown
+    var to = dataArray[0]
 
-	// And of course we want our recipients to know what we really do
-	var message = dataArray[1];
+    // And of course we want our recipients to know what we really do
+    var message = dataArray[1];
 
-	var username = dataArray[2];
-	var apikey = dataArray[3];
+    var username = dataArray[2];
+    var apikey = dataArray[3];
 
 
-	// Build the post string from an object
+    // Build the post string from an object
 
-	var post_data = querystring.stringify({
-		'username': username,
-		'to': to,
-		'message': message
-	});
+    var post_data = querystring.stringify({
+        'username': username,
+        'to': to,
+        'message': message
+    });
 
-	var post_options = {
-		host: 'api.africastalking.com',
-		path: '/version1/messaging',
-		method: 'POST',
+    var post_options = {
+        host: 'api.africastalking.com',
+        path: '/version1/messaging',
+        method: 'POST',
 
-		rejectUnauthorized: false,
-		requestCert: true,
-		agent: false,
+        rejectUnauthorized: false,
+        requestCert: true,
+        agent: false,
 
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded',
-			'Content-Length': post_data.length,
-			'Accept': 'application/json',
-			'apikey': apikey
-		}
-	};
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': post_data.length,
+            'Accept': 'application/json',
+            'apikey': apikey
+        }
+    };
 
-	var post_req = https.request(post_options, function(res) {
-		res.setEncoding('utf8');
-		res.on('data', function(chunk) {
-			console.log(chunk)
-			var jsObject = JSON.parse(chunk);
-			cb(null, jsObject)
-		});
-	});
+    var post_req = https.request(post_options, function(res) {
+        res.setEncoding('utf8');
+        res.on('data', function(chunk) {
+            console.log(chunk)
+            cb(null, chunk)
+        });
+    });
 
-	// Add post parameters to the http request
-	post_req.write(post_data);
+    // Add post parameters to the http request
+    post_req.write(post_data);
 
-	post_req.end();
+    post_req.end();
 }
 //Call sendMessage method
