@@ -17,6 +17,16 @@ var creator = function() {
     var timeId = cassandra.types.TimeUuid //new instance based on current date timeId.now
 
     var structure = [
+        cassie.tableMaker({
+            keyspace: "schoolmaster",
+            table: "user_sessions",
+            record: {
+                sid: "text",
+                expires: "timestamp",
+                session: "text"
+            },
+            primary_keys: ["sid"]
+        }),
 
         cassie.tableMaker({
             keyspace: "sms_master",
