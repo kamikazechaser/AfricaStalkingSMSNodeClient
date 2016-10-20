@@ -107,7 +107,7 @@ app.engine('handlebars', exphbs({
 app.set('view engine', 'handlebars');
 
 
-const port = process.env.OPENSHIFT_NODEJS_PORT || 4001
+const port = process.env.OPENSHIFT_NODEJS_PORT || 80
 const ip = process.env.OPENSHIFT_NODEJS_IP || "localhost"
 
 
@@ -119,7 +119,6 @@ require("./views/messages/server.js")(app)
 require("./views/new_message/server.js")(app)
 require("./views/org_details/server.js")(app)
 
-const port = 3000
 app.listen(port, function() {
     console.log('Example app listening on port ${port}!');
 });
