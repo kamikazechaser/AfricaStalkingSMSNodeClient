@@ -26,7 +26,7 @@ var creator = function() {
                 password: "text",
                 session_token: "text"
             },
-            primary_keys: ["id"]
+            primary_keys: ["user_name"]
         }),
 
         cassie.tableMaker({
@@ -95,7 +95,7 @@ var creator = function() {
                 password: "text",
                 session_token: "text"
             },
-            primary_keys: ["id"]
+            primary_keys: ["user_name"]
         }),
 
 
@@ -109,7 +109,7 @@ var creator = function() {
                 p_pic: "text",
                 telephone: "text"
             },
-            primary_keys: ["id"]
+            primary_keys: ["user_name"]
         })
 
     ]
