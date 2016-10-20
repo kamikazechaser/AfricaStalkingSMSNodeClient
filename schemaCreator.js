@@ -18,7 +18,7 @@ var creator = function() {
 
     var structure = [
         cassie.tableMaker({
-            keyspace: "schoolmaster",
+            keyspace: "sms_master",
             table: "user_sessions",
             record: {
                 sid: "text",
