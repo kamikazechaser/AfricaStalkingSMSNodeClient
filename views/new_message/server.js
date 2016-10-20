@@ -15,7 +15,7 @@ const contactPoint2 = process.env.OPENSHIFT_CASSANDRA_DB_HOST + ":" + process.en
 
 var connectionOptions = {
     contactPoints: [(process.env.OPENSHIFT_CASSANDRA_DB_HOST ? contactPoint2 : "localhost")],
-    keyspace: 'schoolmaster'
+    keyspace: 'sms_master'
 };
 
 var client = new cassandra.Client(connectionOptions);

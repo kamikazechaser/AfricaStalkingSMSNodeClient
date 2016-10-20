@@ -69,7 +69,7 @@ app.use(formidable.parse({
 app.use(expressValidator())
 
 sessionStoreOptions = {
-    "table": "schoolmaster.user_sessions",
+    "table": "sms_master.user_sessions",
     "client": client
 }
 
