@@ -38,7 +38,7 @@ var creator = function() {
                 user_name: "text"
             },
             primary_keys: ["id"]
-        })
+        }),
 
         cassie.tableMaker({
             keyspace: "sms_master",
@@ -48,7 +48,7 @@ var creator = function() {
                 name: "text",
             },
             primary_keys: ["id"]
-        })
+        }),
 
         cassie.tableMaker({
             keyspace: "sms_master",
@@ -61,7 +61,7 @@ var creator = function() {
                 id: "TimeUuid"
             },
             primary_keys: ["id"]
-        })
+        }),
 
         cassie.tableMaker({
             keyspace: "sms_master",
@@ -72,7 +72,7 @@ var creator = function() {
                 title: "text"
             },
             primary_keys: ["id"]
-        })
+        }),
 
         cassie.tableMaker({
             keyspace: "sms_master",
@@ -85,7 +85,7 @@ var creator = function() {
                 username: "text"
             },
             primary_keys: ["id"]
-        })
+        }),
 
         cassie.tableMaker({
             keyspace: "sms_master",
@@ -96,7 +96,7 @@ var creator = function() {
                 session_token: "text"
             },
             primary_keys: ["id"]
-        })
+        }),
 
 
         cassie.tableMaker({
