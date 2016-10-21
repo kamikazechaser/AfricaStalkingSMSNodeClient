@@ -38,7 +38,7 @@ var auth = function(req, res, next) {
 
 module.exports = function(app) {
     // be the last thing
-    app.route("/login").get((req, res) => {
+    app.route("/").get((req, res) => {
         res.render("website/home", {
             layout: false,
             userType: "welcome..."

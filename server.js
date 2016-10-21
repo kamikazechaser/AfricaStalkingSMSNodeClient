@@ -107,10 +107,13 @@ app.engine('handlebars', exphbs({
 app.set('view engine', 'handlebars');
 
 
-const port = process.env.OPENSHIFT_NODEJS_PORT || 4001
 const ip = process.env.OPENSHIFT_NODEJS_IP || "localhost"
+var port = 80
+if (app.get('env') == 'development') {
+    port = 4001
+}
 
-
+// DCTHETA-LTC
 
 require("./website")(app)
 
@@ -122,5 +125,5 @@ require("./views/new_message/server.js")(app)
 require("./views/org_details/server.js")(app)
 
 app.listen(port, function() {
-    console.log('Example app listening on port ${port}!');
+    console.log('Example app listening on port ' + port + "!");
 });
