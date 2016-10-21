@@ -37,10 +37,8 @@ var auth = function(req, res, next) {
 
 
 module.exports = function(app) {
-
-
     // be the last thing
-    app.route("/")
+    app.route("/login")
         .get((req, res) => {
             res.render("logins/index", {
                 layout: false,

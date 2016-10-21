@@ -107,10 +107,12 @@ app.engine('handlebars', exphbs({
 app.set('view engine', 'handlebars');
 
 
-const port = process.env.OPENSHIFT_NODEJS_PORT || 80
+const port = process.env.OPENSHIFT_NODEJS_PORT || 4001
 const ip = process.env.OPENSHIFT_NODEJS_IP || "localhost"
 
 
+
+require("./website")(app)
 
 require("./bulkSMS")(app)
 
