@@ -1,1 +1,285 @@
-<h1>hey welcome!</h1>
+{{>head}}
+<body class="skin-blue layout-top-nav">
+  <div class="wrapper">
+
+  <header class="main-header">
+    <nav class="navbar navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="../../index2.html" class="navbar-brand">Sabek Systems</a>
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+            <i class="fa fa-bars"></i>
+          </button>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        
+        <div class="collapse navbar-collapse pull-right" id="navbar-collapse">
+
+          <form action="/login" method="post" class="navbar-form navbar-left" role="login">
+            <div class="form-group">
+              <input type="text" class="form-control" name="username" placeholder="Username">
+            </div>
+            <div class="form-group">
+              <input type="password"  class="form-control" name="password" placeholder="Password">
+            </div>
+            <button class="btn btn-flat" type="submit">login</button>
+          </form>
+
+        </div>
+        
+        <!-- /.navbar-custom-menu -->
+      </div>
+      <!-- /.container-fluid -->
+    </nav>
+  </header>
+  <!-- Full Width Column -->
+
+  <div class="content-wrapper">
+  <br>
+    <div class="container">
+      <div class="row">
+      	<div class="col-md-7 text-center"><!-- /.col -->
+          <div class="box box-solid">
+            <!-- /.box-header -->
+            <div class="box-body">
+              <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                  <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                  <li data-target="#carousel-example-generic" data-slide-to="1" class=""></li>
+                  <li data-target="#carousel-example-generic" data-slide-to="2" class=""></li>
+                </ol>
+                <div class="carousel-inner">
+                  <div class="item active">
+                    <img src="http://placehold.it/900x500/39CCCC/ffffff&text=I+Love+Bootstrap" alt="First slide">
+
+                    <div class="carousel-caption">
+                      First Slide
+                    </div>
+                  </div>
+                  <div class="item">
+                    <img src="http://placehold.it/900x500/3c8dbc/ffffff&text=I+Love+Bootstrap" alt="Second slide">
+
+                    <div class="carousel-caption">
+                      Second Slide
+                    </div>
+                  </div>
+                  <div class="item">
+                    <img src="http://placehold.it/900x500/f39c12/ffffff&text=I+Love+Bootstrap" alt="Third slide">
+
+                    <div class="carousel-caption">
+                      Third Slide
+                    </div>
+                  </div>
+                </div>
+                <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+                  <span class="fa fa-angle-left"></span>
+                </a>
+                <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+                  <span class="fa fa-angle-right"></span>
+                </a>
+              </div>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        <!-- /.col --></div>
+      	<div class="col-md-5"><div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">Welcome, please create an account with us</h3>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+            <form role="form">
+              <div class="box-body">
+              <div class="form-group">
+                  <label for="exampleInputEmail1">Full names</label>
+                  <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Full names as they appear in your national documents">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Organisation</label>
+                  <input type="text" class="form-control" id="exampleInputEmail1" placeholder="What organisation are you representing?">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Email address</label>
+                  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Your Official Email address">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">Password</label>
+                  <input type="password" class="form-control" id="exampleInputPassword1" placeholder="What password would you like to access you account?">
+                </div>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox"> Male
+                    
+                  </label>
+                  <label>
+                    <input type="checkbox"> Female
+                    
+                  </label>
+           
+                </div>
+              </div>
+              <!-- /.box-body -->
+
+              <div class="box-footer">
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+            </form>
+          </div></div>
+      </div>
+      <!-- /.content -->
+
+      {{!-- the rest of the page --}}
+      <h2 class="text-center" style="margin-bottom: 40px"><b>What do we have to offer? </b></h2>
+
+      <div class="container text-center">
+
+      	<div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="feature-item animated fadeInUp delay-3">
+                    <i class="fa fa-css3"></i>
+                    <h4>HTML5 &amp; CSS3</h4>
+
+                    <p>
+                        Verified HTML5 and CSS3 syntax by W3C services.
+                    </p>
+                </div>
+            </div>
+            <!-- /.item -->
+
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="feature-item animated fadeInUp delay-3">
+                    <i class="fa fa-laptop"></i>
+                    <h4>Responsive Design</h4>
+
+                    <p>
+                        Mobile first design. Fits many resolutions, from
+                        large desktops to small mobile devices.
+                    </p>
+                </div>
+            </div>
+            <!-- /.item -->
+            <div class="clearfix visible-sm"></div>
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="feature-item animated fadeInUp delay-3">
+                    <i class="fa fa-rocket"></i>
+                    <h4>1000+ Icons</h4>
+
+                    <p>
+                        Featuring Font Awesome, Ion Icons, and Glyphicons.
+                    </p>
+                </div>
+            </div>
+            <!-- /.item -->
+            <div class="clearfix visible-md visible-lg"></div>
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="feature-item animated fadeInUp delay-3">
+                    <i class="fa fa-paint-brush"></i>
+                    <h4>6 Skins</h4>
+
+                    <p>
+                        Choose a skin that matches your branding or
+                        edit the LESS variables to create your own.
+                    </p>
+                </div>
+            </div>
+            <!-- /.item -->
+            <div class="clearfix visible-sm"></div>
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="feature-item animated fadeInUp delay-3">
+                    <i class="fa fa-print"></i>
+                    <h4>Enhanced For Printing</h4>
+
+                    <p>
+                        Support for printing any page. The invoice page
+                        makes a perfect example.
+                    </p>
+                </div>
+            </div>
+            <!-- /.item -->
+
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="feature-item animated fadeInUp delay-3">
+                    <i class="fa fa-bolt"></i>
+                    <h4>Lightweight</h4>
+
+                    <p>
+                        Although AdminLTE is full of features, it was
+                        designed to be fast and lightweight.
+                    </p>
+                </div>
+            </div>
+            <!-- /.item -->
+            <div class="clearfix visible-sm visible-md visible-lg"></div>
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="feature-item animated fadeInUp delay-3">
+                    <i class="fa fa-globe"></i>
+                    <h4>Browser Compatibility</h4>
+
+                    <p>
+                        Support for most major browsers including Safari, IE9+, Chrome, FF, and Opera.
+                    </p>
+                </div>
+            </div>
+            <!-- /.item -->
+
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="feature-item animated fadeInUp delay-3">
+                    <i class="fa fa-th"></i>
+                    <h4>Many Plugins</h4>
+
+                    <p>
+                        Over 18 plugins and an aditional 3 custom made
+                        plugins just for AdminLTE.
+                    </p>
+                </div>
+            </div>
+            <!-- /.item -->
+            <div class="clearfix visible-sm"></div>
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="feature-item animated fadeInUp delay-3">
+                    <i class="fa fa-users"></i>
+                    <h4>Active Community</h4>
+
+                    <p>
+                        Have a suggestion or an issue?
+                        Visit our <a href="https://github.com/almasaeed2010/AdminLTE/issues">Github</a>
+                        repository to get help.
+                    </p>
+                </div>
+            </div>
+            <!-- /.item -->
+        </div>
+      </div>
+
+
+
+
+      {{!-- end of the adverts of what we do --}}
+    </div>
+    <!-- /.container -->
+  </div>
+  <!-- /.content-wrapper -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="pull-right hidden-xs">
+        <b>Version</b> 2.3.7
+      </div>
+      <strong>Copyright &copy; 2016 <a href="http://almsaeedstudio.com">Sabek LTD</a>.</strong> All rights
+      reserved.
+    </div>
+    <!-- /.container -->
+  </footer>
+</div>
+    
+      {{!-- navbar with drops --}}
+      {{!-- big page with banner --}}
+      {{!-- customer stories --}}
+      
+      <!-- /.login-box -->
+      {{>scripts}}
+    </body>
+
+    {{!-- <h1>welome</h1> --}}
+

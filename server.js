@@ -30,7 +30,6 @@ var client = new cassandra.Client(connectionOptions);
 
 
 
-
 var id = cassandra.types.Uuid; //new uuid v4 .random()
 var timeId = cassandra.types.TimeUuid //new instance based on current date timeId.now
 function log(err, results) {
@@ -58,7 +57,9 @@ if (app.get('env') == 'production') {
 }
 
 // capture url encoded forms and other
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({
+    extended: false
+}))
 
 // capture multipart forms
 app.use(formidable.parse({
@@ -127,3 +128,26 @@ require("./views/org_details/server.js")(app)
 app.listen(port, function() {
     console.log('Example app listening on port ' + port + "!");
 });
+
+
+// SENDING THE SMS
+
+
+
+// var response = {
+//     response: [{
+//         phonenumber: ' 254711657108',
+//         status: '1701',
+//         messageId: '14770615584507b308410612bf8003',
+//         cost: '0.8',
+//         message: 'success'
+//     }]
+// } {
+//     response: [{
+//         phonenumber: ' 254711657108',
+//         status: '1701',
+//         messageId: '14770615584507b308410612bf8003',
+//         cost: '0.8',
+//         message: 'success'
+//     }]
+// }

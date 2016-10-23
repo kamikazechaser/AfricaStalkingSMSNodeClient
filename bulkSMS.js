@@ -183,8 +183,6 @@ module.exports = function(app) {
         })
         .post(function(req, res) {
             console.log(req.body)
-                // save to the db, return to the list
-            console.log(req.body)
 
             // read the values and validate, post to the db or reply with errors
             const contact_id = timeId.now()
@@ -193,23 +191,32 @@ module.exports = function(app) {
                 query: `INSERT INTO sms_master.contacts (id,user_name, phone_number) VALUES (?, ?, ?);`,
                 params: [contact_id, req.body.Name, req.body["Telephone Number"]]
             }], function(err, result) {
+                console.log(req.body)
                 res.redirect("/contacts")
                     // add the user to the specified groups
                     // assign the groups. later. not exactly important 
+                if (req.body["Select groups"] instanceof Array) {
+                    req.body["Select groups"].map((group) => {
+                        var assign = [{
+                            query: `INSERT INTO sms_master.groups_per_contact (id,contact,contact_name, group) VALUES (?,?, ?, ?);`,
+                            params: [timeId.now(), contact_id, req.body.Name, group]
+                        }]
 
-                req.body["Select groups"].map((group) => {
+                        client.batch(assign, function(err, result) {
+                            assert.ifError(err);
+                        });
+                    })
+                } else {
                     var assign = [{
-                        query: `INSERT INTO sms_master.groups_per_contact (contact,contact_name, group) VALUES (?, ?, ?);`,
-                        params: [contact_id, req.body.Name, group]
+                        query: `INSERT INTO sms_master.groups_per_contact (id,contact,contact_name, group) VALUES (?,?, ?, ?);`,
+                        params: [timeId.now(), contact_id, req.body.Name, req.body["Select groups"]]
                     }]
 
                     client.batch(assign, function(err, result) {
                         assert.ifError(err);
-
-                        console.log(result.rows)
-
                     });
-                })
+                }
+
             })
         })
 
@@ -387,24 +394,29 @@ module.exports = function(app) {
 
         // remove the records where the contact exists
 
-        client.batch([{
+        var query = {
             query: `INSERT INTO sms_master.contacts (id,user_name, phone_number) VALUES (?, ?, ?);`,
-            params: [contact_id, req.body.Name, req.body["Telephone Number"]]
-        }], function(err, result) {
+            params: [req.params.contact_id, req.body.Name, req.body["Telephone Number"]]
+        }
+
+        console.log(query)
+
+        client.batch([query], function(err, result) {
             res.redirect("/contacts")
+            assert.ifError(err)
+            console.log("inserted the contact again")
                 // add the user to the specified groups
                 // assign the groups. later. not exactly important 
 
             // remove him from the groups records
             client.execute("delete from sms_master.groups_per_contact where contact=?", [contact_id], function(err, result) {
                 assert.ifError(err);
-                console.log(result.rows)
 
                 // insert 
                 req.body["Select groups"].map((group) => {
                     var assign = [{
-                        query: `INSERT INTO sms_master.groups_per_contact (contact,contact_name, group) VALUES (?, ?, ?);`,
-                        params: [contact_id, req.body.Name, group]
+                        query: `INSERT INTO sms_master.groups_per_contact (id,contact,contact_name, group) VALUES (?,?, ?, ?);`,
+                        params: [timeId.now(), contact_id, req.body.Name, group]
                     }]
 
                     client.batch(assign, function(err, result) {

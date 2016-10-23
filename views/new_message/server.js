@@ -3,6 +3,7 @@ const app = express.Router();
 const assert = require("assert")
 const async = require("async")
 const cassandra = require('cassandra-driver');
+var request = require("request")
 
 
 console.log("starting school engine".blue)
@@ -227,22 +228,22 @@ module.exports = function(app) {
 
                 }, function(err) {
 
-                    console.log(phone_numbers)
-                        // construct the string
+                    // console.log(phone_numbers)
+                    // construct the string
                     var resultString = ""
                     phone_numbers.map((num) => {
                         // remove the spaces
                         resultString = resultString + num.replace(/ /g, '') + ","
                     })
 
-                    console.log(resultString)
+                    // console.log(resultString)
 
                     var message = req.session.message.title + "\n\n" + req.session.message.message
 
                     sendMessage([resultString, message], (err, results) => {
 
-                            console.log(results)
-                                // reply on the callback of sending the messages
+                            // console.log(results)
+                            // reply on the callback of sending the messages
                             res.render('new_message/send_report', {
                                 session: req.session,
                                 groups: result.rows,
@@ -253,27 +254,27 @@ module.exports = function(app) {
                         // test data
 
                     // var responce = {
-                    // 	"SMSMessageData": {
-                    // 		"Message": "Sent to 2/2 Total Cost: KES 2.0000",
-                    // 		"Recipients": [{
-                    // 			"number": "+254711657108",
-                    // 			"status": "Success",
-                    // 			"cost": "KES 1.0000",
-                    // 			"messageId": "ATXid_405d837f3991060dd2ef7c3bc717dab7"
-                    // 		}, {
-                    // 			"number": "+254703917754",
-                    // 			"status": "Success",
-                    // 			"cost": "KES 1.0000",
-                    // 			"messageId": "ATXid_0ac5245b257fefead5d4a70b2c0a1ef5"
-                    // 		}]
-                    // 	}
+                    //  "SMSMessageData": {
+                    //      "Message": "Sent to 2/2 Total Cost: KES 2.0000",
+                    //      "Recipients": [{
+                    //          "number": "+254711657108",
+                    //          "status": "Success",
+                    //          "cost": "KES 1.0000",
+                    //          "messageId": "ATXid_405d837f3991060dd2ef7c3bc717dab7"
+                    //      }, {
+                    //          "number": "+254703917754",
+                    //          "status": "Success",
+                    //          "cost": "KES 1.0000",
+                    //          "messageId": "ATXid_0ac5245b257fefead5d4a70b2c0a1ef5"
+                    //      }]
+                    //  }
                     // }
 
                     // res.render('new_message/send_report', {
-                    // 	session: req.session,
-                    // 	groups: result.rows,
-                    // 	results:responce.SMSMessageData,
-                    // 	layout: "bulkSMS"
+                    //  session: req.session,
+                    //  groups: result.rows,
+                    //  results:responce.SMSMessageData,
+                    //  layout: "bulkSMS"
                     // });
                 })
 
@@ -314,43 +315,27 @@ function sendMessage(dataArray, cb) {
     var username = dataArray[2];
     var apikey = dataArray[3];
 
+    console.log(username, apikey, message)
 
-    // Build the post string from an object
+    var postData = {
+        "message": message,
+        "recipient": to,
+        "username": username,
+        "apikey": apikey,
+        "senderId": "MOBILESASA"
+    }
 
-    var post_data = querystring.stringify({
-        'username': username,
-        'to': to,
-        'message': message
-    });
+    console.log(postData)
 
-    var post_options = {
-        host: 'api.africastalking.com',
-        path: '/version1/messaging',
-        method: 'POST',
-
-        rejectUnauthorized: false,
-        requestCert: true,
-        agent: false,
-
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': post_data.length,
-            'Accept': 'application/json',
-            'apikey': apikey
+    request.post({
+        url: 'http://mobilesasa.com/sendsmsjson.php',
+        body: postData,
+        json: true
+    }, function(error, response, body) {
+        console.log(body)
+        if (!error && response.statusCode == 200) {
+            console.log(body)
         }
-    };
-
-    var post_req = https.request(post_options, function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function(chunk) {
-            console.log(chunk)
-            cb(null, chunk)
-        });
-    });
-
-    // Add post parameters to the http request
-    post_req.write(post_data);
-
-    post_req.end();
+        cb(null, JSON.stringify(body, null, "\t"))
+    })
 }
-//Call sendMessage method
