@@ -76,20 +76,12 @@ sessionStoreOptions = {
     "client": client
 }
 
-var sess = {
+app.use(session({
     secret: '2C44-4D44-WppQ38S',
     resave: true,
     saveUninitialized: true,
     store: new CassandraStore(sessionStoreOptions),
-    cookie: {}
-}
-
-if (app.get('env') === 'production') {
-    app.set('trust proxy', 1) // trust first proxy
-    sess.cookie.secure = true // serve secure cookies
-}
-
-app.use(session(sess))
+}));
 
 app.use(function(req, res, next) {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
