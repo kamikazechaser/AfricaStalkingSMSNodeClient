@@ -19,7 +19,7 @@ var sheet_name_list = workbook.SheetNames;
 const cassie = require("./query_creator")
 
 var batch = []
-    // create a group for each 
+    // create a group for each
 var groups = {}
 var contacts = {}
 
@@ -53,17 +53,37 @@ Object.keys(groups).map((group) => {
     var contactDetails = XLSX.utils.sheet_to_json(workbook.Sheets[group], {
             raw: true
         })
-        // create 
+        // create
     contactDetails.map((contactDetail) => {
         // add the command to create this user
 
         const contact = {
             id: timeId.now(),
-            user_name: contactDetail["FIRST NAME"] + " " + contactDetail["SUR NAME"] + " " + contactDetail["OTHER NAMES"] + " " + ,
+            user_name: contactDetail["FIRST NAME"] + " " + contactDetail["SUR NAME"] + " " + contactDetail["OTHER NAMES"] ,
             phone_number: contactDetail["Contact"]
         }
+        // console.log(contactDetail["Contact"])
+        // dont import a contact where we dont have the phone number yet
+        if(contactDetail["Contact"] != undefined){
+          contacts[contactDetail["Contact"]] = contact
 
-        contactDetail["Contact"] contacts[contactDetail["Contact"]] = contact
+          // add the contact in the group we found him in
+          const contact_group ={
+            id:timeId.now(),
+            contact:contact.id,
+            contact_name:contact.user_name,
+            group:groups[group].id,
+            group_name:groups[group].name
+          }
+
+          batch.push(cassie.insertMaker({
+              keyspace: "sms_master",
+              table: "groups_per_contact",
+              record: contact_group
+          }))
+
+        }
+
     })
 })
 
@@ -79,9 +99,30 @@ Object.keys(contacts).map((contact) => {
     }))
 })
 
-client.batch(batch, (err, res) => {
+console.log(batch.length)
+
+var p1 = batch.slice(0,300);
+var p2 = batch.slice(300,600);
+var p3 = batch.slice(600,900);
+var p4 = batch.slice(900,1200);
+client.batch(p1, (err, res) => {
     assert.ifError(err)
-    console.log("data dumped into cluster successfully")
+    console.log("data p1 dumped into cluster successfully")
+
+    client.batch(p2, (err, res) => {
+        assert.ifError(err)
+        console.log("data p2 dumped into cluster successfully")
+
+        client.batch(p3, (err, res) => {
+            assert.ifError(err)
+            console.log("data p3 dumped into cluster successfully")
+
+            client.batch(p4, (err, res) => {
+                assert.ifError(err)
+                console.log("data p4 dumped into cluster successfully")
+            })
+        })
+    })
 })
 
 

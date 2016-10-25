@@ -13,7 +13,7 @@
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
-        
+
         <div class="collapse navbar-collapse pull-right" id="navbar-collapse">
 
           <form action="/login" method="post" class="navbar-form navbar-left" role="login">
@@ -27,7 +27,7 @@
           </form>
 
         </div>
-        
+
         <!-- /.navbar-custom-menu -->
       </div>
       <!-- /.container-fluid -->
@@ -39,7 +39,7 @@
   <br>
     <div class="container">
       <div class="row">
-      	<div class="col-md-7 text-center"><!-- /.col -->
+      	<div class="col-md-9 text-center"><!-- /.col -->
           <div class="box box-solid">
             <!-- /.box-header -->
             <div class="box-body">
@@ -84,46 +84,45 @@
           </div>
           <!-- /.box -->
         <!-- /.col --></div>
-      	<div class="col-md-5"><div class="box box-primary">
+      	<div class="col-md-3"><div class="box box-primary">
             <div class="box-header with-border">
-              <h3 class="box-title">Welcome, please create an account with us</h3>
+              <h3 class="box-title">Become a partner....</h3>
             </div>
             <!-- /.box-header -->
             <!-- form start -->
-            <form role="form">
+            <form role="form" action="" method="post">
               <div class="box-body">
               <div class="form-group">
                   <label for="exampleInputEmail1">Full names</label>
-                  <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Full names as they appear in your national documents">
+                  <input type="text" class="form-control" name="name" id="exampleInputEmail1" placeholder="Your full names">
                 </div>
                 <div class="form-group">
                   <label for="exampleInputEmail1">Organisation</label>
-                  <input type="text" class="form-control" id="exampleInputEmail1" placeholder="What organisation are you representing?">
+                  <input type="text" class="form-control" name="organisation" id="exampleInputEmail1" placeholder="Name of the organisation">
                 </div>
                 <div class="form-group">
                   <label for="exampleInputEmail1">Email address</label>
-                  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Your Official Email address">
+                  <input type="email" class="form-control" name="email" id="exampleInputEmail1" placeholder="Your email address">
                 </div>
                 <div class="form-group">
                   <label for="exampleInputPassword1">Password</label>
-                  <input type="password" class="form-control" id="exampleInputPassword1" placeholder="What password would you like to access you account?">
+                  <input type="password" class="form-control" name="password" id="exampleInputPassword1" placeholder="Secret password">
                 </div>
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox"> Male
-                    
+                    <input type="radio" name="gender"> Male
                   </label>
+                </div>
+                <div class="checkbox">
                   <label>
-                    <input type="checkbox"> Female
-                    
+                    <input type="radio" name="gender"> Female
                   </label>
-           
                 </div>
               </div>
               <!-- /.box-body -->
 
               <div class="box-footer">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary pull-right">Register</button>
               </div>
             </form>
           </div></div>
@@ -272,14 +271,13 @@
     <!-- /.container -->
   </footer>
 </div>
-    
+
       {{!-- navbar with drops --}}
       {{!-- big page with banner --}}
       {{!-- customer stories --}}
-      
+
       <!-- /.login-box -->
       {{>scripts}}
     </body>
 
     {{!-- <h1>welome</h1> --}}
-

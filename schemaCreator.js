@@ -120,6 +120,20 @@ var creator = function() {
                 telephone: "text"
             },
             primary_keys: ["user_name"]
+        }),
+
+        cassie.tableMaker({
+            keyspace: "sms_master",
+            table: "registering_users",
+            record: {
+                id: "timeuuid",
+                email:"varchar",
+                name:"text",
+                gender:"text",
+                organisation:"text",
+                password:"text"
+            },
+            primary_keys: ["id","email"]
         })
 
     ]

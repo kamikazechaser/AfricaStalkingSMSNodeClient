@@ -17,14 +17,14 @@ var timeId = cassandra.types.TimeUuid //new instance based on current date timeI
 
 var cleaner = function(cb) {
     // clear the db contents first
-    const schoolmaster = `SELECT table_name FROM system_schema.tables WHERE keyspace_name = 'schoolmaster';`
+    const schoolmaster = `SELECT table_name FROM system_schema.tables WHERE keyspace_name = 'sms_master';`
 
     client.execute(schoolmaster, function(err, result) {
         assert.ifError(err);
-        console.log('truncating the schoolmaster keyspace');
+        console.log('truncating the sms_master keyspace');
         // console.log(result.rows)
         async.eachSeries(result.rows, function iteratee(row, next) {
-            var truncater = "truncate table schoolmaster." + row.table_name
+            var truncater = "truncate table sms_master." + row.table_name
             client.execute(truncater, function(err, result) {
                 assert.ifError(err);
                 console.log("truncated " + row.table_name)

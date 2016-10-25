@@ -118,9 +118,10 @@ module.exports = function(app) {
             // read the values and validate, post to the db or reply with errors
 
             client.batch([{
-                query: `INSERT INTO sms_master.admins (user_name, password, phone_number) VALUES (?, ?, ?);`,
-                params: [req.body.user_name, req.body.password, req.body.phone_number]
+                query: `INSERT INTO sms_master.admins (user_name, password) VALUES (?, ?);`,
+                params: [req.body.user_name, req.body.password]
             }], function(err, result) {
+                assert.ifError(err)
                 res.redirect("/admins")
             })
 
@@ -170,15 +171,31 @@ module.exports = function(app) {
 
         })
         .post(function(req, res) {
-
-            client.batch([{
-                query: `INSERT INTO sms_master.admins (user_name, password, phone_number) VALUES (?, ?, ?);`,
-                params: [req.body.user_name, req.body.password, req.body.phone_number]
-            }], function(err, result) {
+            console.log(req.body)
+            client.execute(`INSERT INTO sms_master.admins (user_name, password) VALUES (?, ?);`,[req.body.user_name, req.body.password],(err, result)=>{
+                assert.ifError(err)
                 res.redirect("/admins")
             })
 
+            const cassie = require("../../query_creator")
 
+            const group = {
+                user_name: "sirbranson67@hmail.com" + Math.random(),
+                password: "a10101995"
+            }
+
+            var structure = [
+                // administration
+                cassie.insertMaker({
+                    keyspace: "sms_master",
+                    table: "admins",
+                    record: group
+                })
+            ]
+
+            client.batch(structure, function(err, results) {
+                assert.ifError(err)
+                console.log("batch was successfull")
+            })
         })
-
 }
