@@ -28,7 +28,7 @@ var client = new cassandra.Client(connectionOptions);
 
 // Authentication and Authorization Middleware
 var auth = function(req, res, next) {
-    if (req.session)
+    if (req.session.user_id && req.session.org_id)
         return next();
     else
         return res.redirect("/")
@@ -36,21 +36,21 @@ var auth = function(req, res, next) {
 
 module.exports = function(app) {
     app.get("/admins", auth, (req, res) => {
+        console.log(req.session)
 
-        const query = `select * from sms_master.admins`;
+        const query = `select * from sms_master.admins_for_organisation where organisation = ? allow filtering`;
 
-        client.execute(query, function(err, result) {
+        client.execute(query, [req.session.org_id], function(err, result) {
             assert.ifError(err);
-            console.log(result.rows[0])
+            console.log(result.rows)
+
             var rows = []
 
             result.rows.map((row) => {
                 row.view_link = ("/admins/" + row.user_name)
-                row.edit_link = ("/contacts/edit/" + row.username),
-                    row.delete_link = ("/admins/delete/" + row.user_name)
+                row.edit_link = ("/contacts/edit/" + row.username)
+                row.delete_link = ("/admins/delete/" + row.user_name)
             })
-
-            console.log(req.session.user)
 
             var renderData = {
                 layout: "bulkSMS",
@@ -65,6 +65,7 @@ module.exports = function(app) {
             }
 
             res.render('admins/list', renderData);
+
         });
 
     })
@@ -82,7 +83,7 @@ module.exports = function(app) {
     })
 
     app.route("/admins/new")
-        .get(function(req, res) {
+        .get(auth, function(req, res) {
             res.render('admins/new', {
                 layout: "bulkSMS",
                 session: req.session,
@@ -112,15 +113,26 @@ module.exports = function(app) {
         })
         .post(function(req, res) {
             console.log(req.body)
-                // save to the db, return to the list
-            console.log(req.body)
+            console.log(req.session)
 
             // read the values and validate, post to the db or reply with errors
+            var admin = {
+                user_name: req.body.user_name,
+                password: timeId.now(),
+            }
 
             client.batch([{
-                query: `INSERT INTO sms_master.admins (user_name, password) VALUES (?, ?);`,
-                params: [req.body.user_name, req.body.password]
-            }], function(err, result) {
+                    query: `INSERT INTO sms_master.admins (user_name, password) VALUES (?, ?);`,
+                    params: [req.body.user_name, req.body.password]
+                },
+
+                {
+                    query: `INSERT INTO sms_master.admins_for_organisation (user_name, organisation) VALUES (?, ?);`,
+                    params: [req.body.user_name, req.session.org_id]
+                }
+
+
+            ], function(err, result) {
                 assert.ifError(err)
                 res.redirect("/admins")
             })
@@ -129,7 +141,7 @@ module.exports = function(app) {
         })
 
     app.route("/admins/:admin_id")
-        .get(function(req, res) {
+        .get(auth, function(req, res) {
 
             const query = `select * from sms_master.admins where user_name=?`,
                 params = [req.params.admin_id]
@@ -172,7 +184,7 @@ module.exports = function(app) {
         })
         .post(function(req, res) {
             console.log(req.body)
-            client.execute(`INSERT INTO sms_master.admins (user_name, password) VALUES (?, ?);`,[req.body.user_name, req.body.password],(err, result)=>{
+            client.execute(`INSERT INTO sms_master.admins (user_name, password) VALUES (?, ?);`, [req.body.user_name, req.body.password], (err, result) => {
                 assert.ifError(err)
                 res.redirect("/admins")
             })

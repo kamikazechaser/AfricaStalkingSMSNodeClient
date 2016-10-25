@@ -52,6 +52,8 @@ if (app.get('env') == 'production') {
         },
         stream: __dirname + '/../morgan.log'
     }));
+
+
 } else {
     app.use(morgan('dev'));
 }
@@ -80,6 +82,11 @@ app.use(session({
     saveUninitialized: true,
     store: new CassandraStore(sessionStoreOptions),
 }));
+
+if (app.get('env') === 'production') {
+    app.set('trust proxy', 1) // trust first proxy
+    sess.cookie.secure = true // serve secure cookies
+}
 
 app.use(function(req, res, next) {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
@@ -114,16 +121,34 @@ if (app.get('env') == 'development') {
     port = 4001
 }
 
-// DCTHETA-LTC
 
 require("./website")(app)
 
+
+// Authentication and Authorization Middleware
+var auth = function(req, res, next) {
+    if (req.session.user_id && req.session.org_id)
+        return next();
+    else
+        return res.redirect("/")
+};
+
+
+
+
 require("./bulkSMS")(app)
+
 
 require("./views/admins/server.js")(app)
 require("./views/messages/server.js")(app)
 require("./views/new_message/server.js")(app)
 require("./views/org_details/server.js")(app)
+
+app.get("/logout", (req, res) => {
+    req.session.destroy(function(err) {
+        res.redirect("/")
+    })
+})
 
 app.listen(port, function() {
     console.log('Example app listening on port ' + port + "!");

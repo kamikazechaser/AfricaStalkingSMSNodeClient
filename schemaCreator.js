@@ -33,8 +33,7 @@ var creator = function() {
             table: "admins",
             record: {
                 user_name: "text",
-                password: "text",
-                session_token: "text"
+                password: "text"
             },
             primary_keys: ["user_name"]
         }),
@@ -44,10 +43,11 @@ var creator = function() {
             table: "contacts",
             record: {
                 id: "TimeUuid",
+                organisation: "timeuuid",
                 phone_number: "text",
                 user_name: "text"
             },
-            primary_keys: ["id"]
+            primary_keys: ["id", "organisation"]
         }),
 
         cassie.tableMaker({
@@ -55,9 +55,10 @@ var creator = function() {
             table: "groups",
             record: {
                 id: "TimeUuid",
-                name: "text",
+                organisation: "timeuuid",
+                name: "text"
             },
-            primary_keys: ["id"]
+            primary_keys: ["id", "organisation"]
         }),
 
         cassie.tableMaker({
@@ -79,9 +80,10 @@ var creator = function() {
             record: {
                 id: "TimeUuid",
                 content: "text",
-                title: "text"
+                title: "text",
+                organisation: "timeuuid"
             },
-            primary_keys: ["id"]
+            primary_keys: ["id", "organisation"]
         }),
 
         cassie.tableMaker({
@@ -127,23 +129,41 @@ var creator = function() {
             table: "registering_users",
             record: {
                 id: "timeuuid",
-                email:"varchar",
-                name:"text",
-                gender:"text",
-                organisation:"text",
-                password:"text"
+                email: "varchar",
+                name: "text",
+                gender: "text",
+                password: "text"
             },
-            primary_keys: ["id","email"]
-        })
+            primary_keys: ["id", "email"]
+        }),
 
+        cassie.tableMaker({
+            keyspace: "sms_master",
+            table: "organisations",
+            record: {
+                id: "timeuuid",
+                name: "text"
+            },
+            primary_keys: ["id"]
+        }),
+
+        cassie.tableMaker({
+            keyspace: "sms_master",
+            table: "admins_for_organisation",
+            record: {
+                user_name: "text",
+                organisation: "timeuuid"
+            },
+            primary_keys: ["user_name"]
+        })
     ]
 
     console.log(structure)
 
     client.execute(`CREATE KEYSPACE IF NOT EXISTS sms_master WITH REPLICATION = {
-			'class' : 'SimpleStrategy',
-			'replication_factor' : 3
-		};`, (err, results) => {
+            'class' : 'SimpleStrategy',
+            'replication_factor' : 3
+        };`, (err, results) => {
         assert.ifError(err)
 
         var funcs = []

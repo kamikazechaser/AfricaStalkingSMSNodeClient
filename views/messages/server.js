@@ -37,9 +37,9 @@ var auth = function(req, res, next) {
 module.exports = function(app) {
     app.get("/messages", auth, (req, res) => {
 
-        const query = `select * from sms_master.messages`;
+        const query = `select * from sms_master.messages where organisation = ? ALLOW FILTERING`;
 
-        client.execute(query, function(err, result) {
+        client.execute(query, [req.session.org_id], function(err, result) {
             assert.ifError(err);
             console.log(result.rows[0])
             var rows = []
@@ -110,8 +110,8 @@ module.exports = function(app) {
                 // read the values and validate, post to the db or reply with errors
 
             client.batch([{
-                query: `INSERT INTO sms_master.messages (id, title, content) VALUES (?, ?, ?);`,
-                params: [timeId.now(), req.body["Title"], req.body["Content"]]
+                query: `INSERT INTO sms_master.messages (id, title, content, organisation) VALUES (?,?, ?, ?);`,
+                params: [timeId.now(), req.body["Title"], req.body["Content"], req.session.org_id]
             }], function(err, result) {
                 res.redirect("/messages")
             })

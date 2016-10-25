@@ -28,7 +28,7 @@ var client = new cassandra.Client(connectionOptions);
 
 // Authentication and Authorization Middleware
 var auth = function(req, res, next) {
-    if (req.session)
+    if (req.session.org_id)
         return next();
     else
         return res.redirect("/")
@@ -59,19 +59,29 @@ module.exports = function(app) {
                     // chack if passwords are same
                     if (result.rows[0].password == req.body.password) {
                         // assign session and move to dashboard
-                        //set the req object
-                        req.session.user = result.rows[0].full_names;
-                        req.session.username = req.body.username;
-                        req.session.p_pic = (result.rows[0].p_pic || "Profile_avatar_placeholder_large.png");
-                        req.session.id = result.rows[0].id;
-                        if (result.rows[0].id instanceof timeId) {
-                            req.session.createdAt = moment(result.rows[0].id.getDate()).fromNow()
-                        } else {
-                            req.session.createdAt = "for some time now"
-                        }
+                        client.execute("select * from admins_for_organisation where user_name=?", [req.body.username], (err, admins_for_organisations) => {
+                            assert.ifError(err)
+                                // check the number of orgs, start with only one and send there direct
+                            console.log(admins_for_organisations.rows)
+                            var sessionData = admins_for_organisations.rows[0]
 
-                        // send to the next page and it will be available
-                        res.redirect("/contacts")
+                            //set the req object
+                            req.session.user = result.rows[0].full_names;
+                            req.session.username = req.body.username;
+                            req.session.p_pic = (result.rows[0].p_pic || "Profile_avatar_placeholder_large.png");
+                            req.session.id = result.rows[0].id;
+
+                            if (result.rows[0].id instanceof timeId) {
+                                req.session.createdAt = moment(result.rows[0].id.getDate()).fromNow()
+                            } else {
+                                req.session.createdAt = "for some time now"
+                            }
+
+                            req.session.user_id = sessionData.user_name
+                            req.session.org_id = sessionData.organisation
+                            res.redirect("/dashboard")
+                        })
+
                     } else {
                         // return with error
                         console.log("password issue")
@@ -99,9 +109,9 @@ module.exports = function(app) {
     //contacts
     app.get("/contacts", auth, (req, res) => {
 
-        const query = `select * from sms_master.contacts`;
+        const query = `select * from sms_master.contacts where organisation=? ALLOW FILTERING`;
 
-        client.execute(query, function(err, result) {
+        client.execute(query, [req.session.org_id], function(err, result) {
             assert.ifError(err);
             console.log(result.rows[0])
             var rows = []
@@ -130,6 +140,58 @@ module.exports = function(app) {
         });
 
     })
+
+    app.get("/dashboard", auth, (req, res) => {
+        const organisation = req.session
+        console.log("organisation", organisation)
+        var stats = {}
+        async.parallel([
+            function(next) {
+                client.execute("select count(*) from admins_for_organisation where organisation=? ALLOW FILTERING;", [req.session.org_id], (err, results) => {
+                    assert.ifError(err)
+                        // console.log(results)
+                    stats.admin_count = results.rows[0].count
+                    next()
+                })
+            },
+            function(next) {
+                client.execute("select count(*) from contacts where organisation=? ALLOW FILTERING;", [req.session.org_id], (err, results) => {
+                    assert.ifError(err)
+                        // console.log(results)
+                    stats.contacts_count = results.rows[0].count
+                    next()
+                })
+            },
+            function(next) {
+                client.execute("select count(*) from groups where organisation=? ALLOW FILTERING;", [req.session.org_id], (err, results) => {
+                    assert.ifError(err)
+                        // console.log(results)
+                    stats.groups_count = results.rows[0].count
+                    next()
+                })
+            },
+            function(next) {
+                client.execute("select count(*) from messages where organisation=? ALLOW FILTERING;", [req.session.org_id], (err, results) => {
+                    assert.ifError(err)
+                        // console.log(results)
+                    stats.messages_count = results.rows[0].count
+                    next()
+                })
+            }
+        ], (err) => {
+            // get a row count of some tables
+            res.render('website/dashboard', {
+                layout: "bulkSMS",
+                session: req.session,
+                stats: stats,
+                status: "Online",
+                page: "Dashboard",
+                back: "Version 2.0"
+            })
+        })
+
+    })
+
 
     app.get("/contacts/delete/:contact_id", auth, (req, res) => {
 
@@ -188,9 +250,10 @@ module.exports = function(app) {
             const contact_id = timeId.now()
 
             client.batch([{
-                query: `INSERT INTO sms_master.contacts (id,user_name, phone_number) VALUES (?, ?, ?);`,
-                params: [contact_id, req.body.Name, req.body["Telephone Number"]]
+                query: `INSERT INTO sms_master.contacts (id,organisation,user_name, phone_number) VALUES (?,?, ?, ?);`,
+                params: [contact_id, req.session.org_id, req.body.Name, req.body["Telephone Number"]]
             }], function(err, result) {
+                assert.ifError(err)
                 console.log(req.body)
                 res.redirect("/contacts")
                     // add the user to the specified groups
@@ -462,8 +525,8 @@ module.exports = function(app) {
             // read the values and validate, post to the db or reply with errors
 
             client.batch([{
-                query: `INSERT INTO sms_master.groups (id,name) VALUES (?, ?);`,
-                params: [timeId.now(), req.body.Name]
+                query: `INSERT INTO sms_master.groups (id,name,organisation) VALUES (?, ?, ?);`,
+                params: [timeId.now(), req.body.Name, req.session.org_id]
             }, ], function(err, result) {
                 res.redirect("/groups")
             })
@@ -473,9 +536,10 @@ module.exports = function(app) {
     //groups
     app.get("/groups", auth, (req, res) => {
 
-        const query = `select * from sms_master.groups`;
+        const query = `select * from sms_master.groups where organisation=? allow filtering`;
 
-        client.execute(query, function(err, result) {
+        client.execute(query, [req.session.org_id
+], function(err, result) {
             assert.ifError(err);
             console.log(result.rows[0])
             var rows = []
