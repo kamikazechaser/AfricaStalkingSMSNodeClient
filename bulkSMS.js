@@ -59,28 +59,41 @@ module.exports = function(app) {
                     // chack if passwords are same
                     if (result.rows[0].password == req.body.password) {
                         // assign session and move to dashboard
-                        client.execute("select * from admins_for_organisation where user_name=?", [req.body.username], (err, admins_for_organisations) => {
-                            assert.ifError(err)
-                                // check the number of orgs, start with only one and send there direct
-                            console.log(admins_for_organisations.rows)
-                            var sessionData = admins_for_organisations.rows[0]
+                        async.parallel([
+                            function(next) {
+                                client.execute("select * from admins_for_organisation where user_name=?", [req.body.username], (err, admins_for_organisations) => {
+                                    assert.ifError(err)
+                                        // check the number of orgs, start with only one and send there direct
+                                    console.log(admins_for_organisations.rows)
+                                    var sessionData = admins_for_organisations.rows[0]
 
-                            //set the req object
-                            req.session.user = result.rows[0].full_names;
-                            req.session.username = req.body.username;
-                            req.session.p_pic = (result.rows[0].p_pic || "Profile_avatar_placeholder_large.png");
-                            req.session.id = result.rows[0].id;
+                                    //set the req object
+                                    req.session.user = result.rows[0].full_names;
+                                    req.session.username = req.body.username;
+                                    req.session.p_pic = (result.rows[0].p_pic || "Profile_avatar_placeholder_large.png");
+                                    req.session.id = result.rows[0].id;
 
-                            if (result.rows[0].id instanceof timeId) {
-                                req.session.createdAt = moment(result.rows[0].id.getDate()).fromNow()
-                            } else {
-                                req.session.createdAt = "for some time now"
+                                    if (result.rows[0].id instanceof timeId) {
+                                        req.session.createdAt = moment(result.rows[0].id.getDate()).fromNow()
+                                    } else {
+                                        req.session.createdAt = "for some time now"
+                                    }
+
+                                    req.session.user_id = sessionData.user_name
+                                    req.session.org_id = sessionData.organisation
+                                    client.execute("select * from organisations where id=?", [req.session.org_id], (err, organisation) => {
+                                        assert.ifError(err)
+                                        console.log("organisation details", organisation.rows)
+                                        req.session.org_name = organisation.rows[0].name;
+                                        next()
+                                    })
+
+                                })
                             }
-
-                            req.session.user_id = sessionData.user_name
-                            req.session.org_id = sessionData.organisation
+                        ], function(err) {
                             res.redirect("/dashboard")
                         })
+
 
                     } else {
                         // return with error
@@ -538,8 +551,7 @@ module.exports = function(app) {
 
         const query = `select * from sms_master.groups where organisation=? allow filtering`;
 
-        client.execute(query, [req.session.org_id
-], function(err, result) {
+        client.execute(query, [req.session.org_id], function(err, result) {
             assert.ifError(err);
             console.log(result.rows[0])
             var rows = []
