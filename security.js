@@ -5,13 +5,13 @@ require('letsencrypt-express').create({
     server: 'staging'
 
     ,
-    email: 'john.doe@example.com'
+    email: 'sirbranson67@gmail.com'
 
     ,
     agreeTos: true
 
     ,
-    approveDomains: ['example.com']
+    approveDomains: ['sabek.co.ke']
 
     ,
     app: require('express')().use('/', function(req, res) {
