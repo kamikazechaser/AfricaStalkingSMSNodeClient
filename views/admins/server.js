@@ -70,6 +70,57 @@ module.exports = function(app) {
 
     })
 
+
+    app.route("/profile/:admin_id")
+        .get(auth, function(req, res) {
+            client.execute("select * from admins where user_name=? allow filtering", [req.params.admin_id], (err, results) => {
+                assert.ifError(err)
+                const admin = results.rows[0]
+                res.render('admins/new', {
+                    layout: "bulkSMS",
+                    session: req.session,
+                    status: "Online",
+                    page: "Admin profile",
+                    form: {
+                        title: "Edit admin",
+                        action: "",
+                        method: "post",
+                        fields: [{
+                            name: "Email",
+                            placeholder: "What is the email of the admin?",
+                            type: "text",
+                            value: admin.user_name
+                        }, {
+                            name: "password",
+                            placeholder: "What is the admin called?",
+                            type: "password",
+                            value: admin.password
+                        }]
+                    }
+                });
+            })
+        })
+        .post(function(req, res) {
+            console.log(req.body)
+            console.log(req.session)
+
+            // read the values and validate, post to the db or reply with errors
+            var admin = {
+                user_name: req.body.user_name,
+                password: timeId.now(),
+            }
+
+            client.batch([{
+                query: `INSERT INTO sms_master.admins (user_name, password) VALUES (?, ?);`,
+                params: [req.body["Email"], req.body.password]
+            }], function(err, result) {
+                assert.ifError(err)
+                res.redirect("/profile/" + req.body["Email"])
+            })
+
+
+        })
+
     app.get("/admins/delete/:admin_id", auth, (req, res) => {
 
         const query = `delete from sms_master.admins where user_name=?`;

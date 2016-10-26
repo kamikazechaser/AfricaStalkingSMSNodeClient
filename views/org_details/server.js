@@ -28,45 +28,66 @@ var client = new cassandra.Client(connectionOptions);
 
 // Authentication and Authorization Middleware
 var auth = function(req, res, next) {
-    if (req.session)
+    if (req.session.org_id)
         return next();
     else
         return res.redirect("/")
 };
 
 module.exports = function(app) {
-    app.get("/org_details", auth, (req, res) => {
+    app.route("/org_details")
+        .get(auth, (req, res) => {
+            const query = `select * from sms_master.organisations where id=? allow filtering`;
 
-        const query = `select * from sms_master.org_details`;
+            client.execute(query, [req.session.org_id], function(err, result) {
+                assert.ifError(err);
+                console.log(result.rows[0])
+                const organisation = result.rows[0]
+                console.log(organisation)
+                var rows = []
 
-        client.execute(query, function(err, result) {
-            assert.ifError(err);
-            console.log(result.rows[0])
-            var rows = []
+                console.log(req.session.user)
 
-            result.rows.map((row) => {
-                row.view_link = ("/org_details/" + row.id)
-                row.edit_link = ("/org_details/edit/" + row.id),
-                    row.delete_link = ("/org_details/delete/" + row.id)
+                res.render('org_details/new', {
+                    layout: "bulkSMS",
+                    session: req.session,
+                    status: "Online",
+                    page: "Organisation Information",
+                    form: {
+                        title: "Add new Organisation Details",
+                        action: "",
+                        method: "post",
+                        fields: [{
+                            name: "Org Name",
+                            placeholder: "  ",
+                            type: "text",
+                            value: organisation.name
+                        }, {
+                            name: "Location",
+                            placeholder: " ",
+                            type: "text",
+                            value: organisation.location
+                        }]
+                    }
+                });
+            });
+
+        })
+        .post((req, res) => {
+            console.log(req.body)
+                // read the values and validate, post to the db or reply with errors
+
+            client.batch([{
+                query: `INSERT INTO sms_master.organisations (id, name, location) VALUES (?, ?, ?);`,
+                params: [req.session.org_id, req.body["Org Name"], req.body["Location"]]
+            }], function(err, result) {
+                assert.ifError(err)
+                console.log(result)
+                    // change the session object to update the ui
+                req.session.org_name = req.body["Org Name"]
+                res.redirect("/org_details")
             })
-
-            console.log(req.session.user)
-
-            var renderData = {
-                layout: "bulkSMS",
-                session: req.session,
-                status: "Online",
-                page: "org_details",
-                back: "Dashboard",
-                org_details: result.rows,
-                new: "/org_details/new",
-                org_details: result.rows
-            }
-
-            res.render('org_details/list', renderData);
-        });
-
-    })
+        })
 
     app.get("/org_details/delete/:message_id", auth, (req, res) => {
 

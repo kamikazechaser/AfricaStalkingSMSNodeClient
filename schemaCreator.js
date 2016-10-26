@@ -142,7 +142,8 @@ var creator = function() {
             table: "organisations",
             record: {
                 id: "timeuuid",
-                name: "text"
+                name: "text",
+                locations: "text"
             },
             primary_keys: ["id"]
         }),
