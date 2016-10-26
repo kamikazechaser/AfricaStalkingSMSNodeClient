@@ -89,6 +89,7 @@ module.exports = function(app) {
                             name: "Email",
                             placeholder: "What is the email of the admin?",
                             type: "text",
+                            attrs: "disabled",
                             value: admin.user_name
                         }, {
                             name: "password",

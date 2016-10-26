@@ -25,7 +25,7 @@
 					{{else}}
 					<div class="col-xs-4">
 						<label for="{{field.name}}">{{field.name}}</label>
-						<input id="{{field.name}}" name="{{field.name}}" value="{{field.value}}" type="{{field.type}}" class="form-control {{field.add_class}}" placeholder="{{field.placeholder}}">
+						<input id="{{field.name}}" name="{{field.name}}" value="{{field.value}}" type="{{field.type}}" class="form-control {{field.add_class}}" placeholder="{{field.placeholder}}" {{field.attrs}}>
 					</div>
 					{{/if}}
 				{{/each}}
