@@ -2,7 +2,7 @@ const cassandra = require('cassandra-driver');
 const assert = require("assert")
 const async = require("async")
 const colors = require('colors');
-const morgan = require("morgan");
+// const morgan = require("morgan");
 const moment = require("moment")
 const session = require('express-session');
 const CassandraStore = require("cassandra-store");
@@ -45,18 +45,18 @@ const app = express()
 app.use(express.static("./assets"))
 
 // You can set morgan depending on your environment
-if (app.get('env') == 'production') {
-    app.use(morgan('common', {
-        skip: function(req, res) {
-            return res.statusCode < 400
-        },
-        stream: __dirname + '/../morgan.log'
-    }));
+// if (app.get('env') == 'production') {
+//     app.use(morgan('common', {
+//         skip: function(req, res) {
+//             return res.statusCode < 400
+//         },
+//         stream: __dirname + '/../morgan.log'
+//     }));
 
 
-} else {
-    app.use(morgan('dev'));
-}
+// } else {
+//     app.use(morgan('dev'));
+// }
 
 // capture url encoded forms and other
 app.use(bodyParser.urlencoded({
@@ -82,6 +82,8 @@ app.use(session({
     saveUninitialized: true,
     store: new CassandraStore(sessionStoreOptions),
 }));
+
+// ALTER TABLE sms+master.organisations ADD location text;
 
 app.use(function(req, res, next) {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
