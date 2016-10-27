@@ -1,8 +1,8 @@
 var fs = require('fs');
 var http = require('http');
 var https = require('https');
-var privateKey = fs.readFileSync('/etc/letsencrypt/archive/sabek.co.ke/privkey.pem', 'utf8');
-var certificate = fs.readFileSync('/etc/letsencrypt/archive/sabek.co.ke/fullchain.pem', 'utf8');
+var privateKey = fs.readFileSync('/etc/letsencrypt/archive/sabek.co.ke/privkey1.pem', 'utf8');
+var certificate = fs.readFileSync('/etc/letsencrypt/archive/sabek.co.ke/fullchain1.pem', 'utf8');
 
 var credentials = { key: privateKey, cert: certificate };
 
