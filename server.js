@@ -1,3 +1,13 @@
+// var fs = require('fs');
+var http = require('http');
+var https = require('https');
+var privateKey = fs.readFileSync('/etc/letsencrypt/archive/sabek.co.ke/privkey.pem', 'utf8');
+var certificate = fs.readFileSync('/etc/letsencrypt/archive/sabek.co.ke/fullchain.pem', 'utf8');
+
+var credentials = { key: privateKey, cert: certificate };
+var express = require('express');
+var app = express();
+
 const cassandra = require('cassandra-driver');
 const assert = require("assert")
 const async = require("async")
@@ -155,10 +165,21 @@ app.listen(port, function() {
 //         res.end();
 // }).listen(80);
 
-var https = require('https')
+// var https = require('https')
 
-https.createServer({
-    key: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/privkey.pem"),
-    cert: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/fullchain.pem"),
-    ca: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/chain.pem")
-}, app).listen(443);
+// https.createServer({
+//     key: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/privkey.pem"),
+//     cert: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/fullchain.pem"),
+//     ca: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/chain.pem")
+// }, app).listen(443);
+
+
+
+
+// your express configuration here
+
+var httpServer = http.createServer(app);
+var httpsServer = https.createServer(credentials, app);
+
+httpServer.listen(8080);
+httpsServer.listen(8443);
