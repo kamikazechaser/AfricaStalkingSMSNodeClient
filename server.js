@@ -113,10 +113,7 @@ app.set('view engine', 'handlebars');
 
 
 const ip = process.env.OPENSHIFT_NODEJS_IP || "localhost"
-var port = 80
-if (app.get('env') == 'development') {
-    port = 4001
-}
+const port = 8080
 
 
 require("./website")(app)
