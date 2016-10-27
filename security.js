@@ -1,6 +1,13 @@
 var https = require('https')
 var http = require('http')
+var express = require('express')
 var fs = require('fs')
+
+var app = express()
+
+app.get("/", (req, res) => {
+    res.send("hello world!")
+})
 
 http.createServer(function(req, res) {
     res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
