@@ -1,12 +1,3 @@
-var fs = require('fs');
-var http = require('http');
-var https = require('https');
-var privateKey = fs.readFileSync('/etc/letsencrypt/archive/sabek.co.ke/privkey1.pem', 'utf8');
-var certificate = fs.readFileSync('/etc/letsencrypt/archive/sabek.co.ke/fullchain1.pem', 'utf8');
-
-var credentials = { key: privateKey, cert: certificate };
-
-
 const cassandra = require('cassandra-driver');
 const assert = require("assert")
 const async = require("async")
@@ -121,7 +112,7 @@ app.set('view engine', 'handlebars');
 
 
 const ip = process.env.OPENSHIFT_NODEJS_IP || "localhost"
-const port = 80
+const port = 8080
 
 
 require("./website")(app)
@@ -155,29 +146,3 @@ app.get("/logout", (req, res) => {
 app.listen(port, function() {
     console.log('Example app listening on port ' + port + "!");
 });
-
-
-
-// http.createServer(function(req, res) {   
-//         res.writeHead(301, {"Location": "https://" + req.headers['host'] + req.url});
-//         res.end();
-// }).listen(80);
-
-// var https = require('https')
-
-// https.createServer({
-//     key: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/privkey.pem"),
-//     cert: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/fullchain.pem"),
-//     ca: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/chain.pem")
-// }, app).listen(443);
-
-
-
-
-// your express configuration here
-
-var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
-
-httpServer.listen(8080);
-httpsServer.listen(8443);
