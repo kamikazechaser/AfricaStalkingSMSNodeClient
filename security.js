@@ -8,7 +8,7 @@ http.createServer(function(req, res) {
 }).listen(8000);
 
 https.createServer({
-    key: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/privkey.pem"),
-    cert: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/fullchain.pem"),
-    ca: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/chain.pem")
+    key: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/privkey1.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/fullchain1.pem"),
+    ca: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/chain1.pem")
 }, app).listen(443);
