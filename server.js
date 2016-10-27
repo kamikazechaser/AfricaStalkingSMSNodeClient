@@ -5,8 +5,7 @@ var privateKey = fs.readFileSync('/etc/letsencrypt/archive/sabek.co.ke/privkey.p
 var certificate = fs.readFileSync('/etc/letsencrypt/archive/sabek.co.ke/fullchain.pem', 'utf8');
 
 var credentials = { key: privateKey, cert: certificate };
-var express = require('express');
-var app = express();
+
 
 const cassandra = require('cassandra-driver');
 const assert = require("assert")
@@ -47,7 +46,8 @@ function log(err, results) {
 }
 
 
-const express = require("express")
+var express = require('express');
+var app = express();
 var formidable = require('express-formidable');
 
 const app = express()
