@@ -1,4 +1,4 @@
-// var fs = require('fs');
+var fs = require('fs');
 var http = require('http');
 var https = require('https');
 var privateKey = fs.readFileSync('/etc/letsencrypt/archive/sabek.co.ke/privkey.pem', 'utf8');
@@ -15,7 +15,6 @@ const colors = require('colors');
 const moment = require("moment")
 const session = require('express-session');
 const CassandraStore = require("cassandra-store");
-const fs = require('fs');
 const expressValidator = require('express-validator');
 var exphbs = require('express-handlebars');
 var minifyHTML = require('express-minify-html');
@@ -47,7 +46,6 @@ function log(err, results) {
 
 
 var express = require('express');
-var app = express();
 var formidable = require('express-formidable');
 
 const app = express()
