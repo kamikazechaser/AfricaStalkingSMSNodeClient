@@ -113,7 +113,7 @@ app.set('view engine', 'handlebars');
 
 
 const ip = process.env.OPENSHIFT_NODEJS_IP || "localhost"
-const port = 8080
+const port = 80
 
 
 require("./website")(app)
@@ -149,24 +149,14 @@ app.listen(port, function() {
 });
 
 
-// SENDING THE SMS
 
+// http.createServer(function(req, res) {   
+//         res.writeHead(301, {"Location": "https://" + req.headers['host'] + req.url});
+//         res.end();
+// }).listen(80);
 
-
-// var response = {
-//     response: [{
-//         phonenumber: ' 254711657108',
-//         status: '1701',
-//         messageId: '14770615584507b308410612bf8003',
-//         cost: '0.8',
-//         message: 'success'
-//     }]
-// } {
-//     response: [{
-//         phonenumber: ' 254711657108',
-//         status: '1701',
-//         messageId: '14770615584507b308410612bf8003',
-//         cost: '0.8',
-//         message: 'success'
-//     }]
-// }
+https.createServer({
+    key: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/fullchain.pem"),
+    ca: fs.readFileSync("/etc/letsencrypt/archive/sabek.co.ke/chain.pem")
+}, app).listen(443);
