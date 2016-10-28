@@ -276,18 +276,15 @@ module.exports = function(app) {
 
         var message = req.body["Subject"] + "\n\n" + req.body["Enter message"] + "\n\n"
 
-        getUsernamePassword("dctheta", function(err, results) {
+        sendMessage([resultString, message], (err, results) => {
             console.log(results)
-            sendMessage([resultString, message, results[0], results[1]], (err, results) => {
-                console.log(results)
-                    // reply on the callback of sending the messages
-                res.render('new_message/send_report', {
-                    session: req.session,
-                    results: results.SMSMessageData,
-                    message: results,
-                    layout: "bulkSMS"
-                });
-            })
+                // reply on the callback of sending the messages
+            res.render('new_message/send_report', {
+                session: req.session,
+                results: results.SMSMessageData,
+                message: results,
+                layout: "bulkSMS"
+            });
         })
     })
 
@@ -644,8 +641,8 @@ module.exports = function(app) {
 
             result.rows.map((row) => {
                 row.view_link = ("/groups/" + row.id)
-                row.edit_link = ("/groups/edit/" + row.id),
-                    row.delete_link = ("/groups/delete/" + row.id)
+                row.edit_link = ("/groups/edit/" + row.id)
+                row.delete_link = ("/groups/delete/" + row.id)
             })
 
             console.log(req.session.user)
@@ -755,14 +752,15 @@ var querystring = require('querystring');
 var https = require('https');
 // Your login credentials
 
-function getUsernamePassword(id, cb) {
-    client.execute("select * from sms_master.org_details;", function(err, results) {
-        console.log(results)
-        assert.ifError(err)
-            // body...
-        cb(err, [results.rows[0].username, results.rows[0].key])
-    })
-}
+// function getUsernamePassword(id, cb) {
+//     client.execute("select * from sms_master.org_details;", function(err, results) {
+//         console.log(results)
+//         assert.ifError(err)
+//             // body...
+//         cb(err, [results.rows[0].username, results.rows[0].key])
+//     })
+// }
+
 
 function sendMessage(dataArray, cb) {
 
@@ -775,8 +773,6 @@ function sendMessage(dataArray, cb) {
     // And of course we want our recipients to know what we really do
     var message = dataArray[1];
 
-    var username = dataArray[2];
-    var apikey = dataArray[3];
 
     console.log(username, apikey, message)
 
@@ -804,22 +800,6 @@ function sendMessage(dataArray, cb) {
 
 
 }
-
-
-// request.post({
-//     url: 'http://mobilesasa.com/accountbalance.php',
-//     body: {
-//         username: "Branson",
-//         apikey: "908b353c4496d48ab1167ee4d2ffae1477059578",
-//     }
-// }, function(error, response, body) {
-//     console.log(body)
-//     if (!error && response.statusCode == 200) {
-//         console.log(body)
-//     }
-//     // cb(null, JSON.stringify(body, null, "\t"))
-// })
-
 
 
 var querystring = require('querystring');
