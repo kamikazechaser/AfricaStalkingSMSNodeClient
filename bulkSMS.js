@@ -773,9 +773,6 @@ function sendMessage(dataArray, cb) {
     // And of course we want our recipients to know what we really do
     var message = dataArray[1];
 
-
-    console.log(username, apikey, message)
-
     var postData = {
         "message": message,
         "recipient": to,
