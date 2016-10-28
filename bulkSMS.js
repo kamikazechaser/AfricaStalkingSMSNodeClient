@@ -3,6 +3,11 @@ const app = express.Router();
 const assert = require("assert")
 const async = require("async")
 const cassandra = require('cassandra-driver');
+var phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+var PNF = require('google-libphonenumber').PhoneNumberFormat;
+var request = require("request")
+
+
 
 
 console.log("starting school engine".blue)
@@ -131,8 +136,8 @@ module.exports = function(app) {
 
             result.rows.map((row) => {
                 row.view_link = ("/contacts/" + row.id)
-                row.edit_link = ("/contacts/edit/" + row.id),
-                    row.delete_link = ("/contacts/delete/" + row.id)
+                row.edit_link = ("/contacts/edit/" + row.id)
+                row.delete_link = ("/contacts/delete/" + row.id)
             })
 
             console.log(req.session.user)
@@ -190,6 +195,19 @@ module.exports = function(app) {
                     stats.messages_count = results.rows[0].count
                     next()
                 })
+            },
+            function(next) {
+                client.execute("select * from contacts where organisation = ? ALLOW FILTERING;", [req.session.org_id], (err, results) => {
+                    assert.ifError(err)
+                        // console.log(results)
+                    stats.contacts = []
+                    results.rows.map((row) => stats.contacts.push({
+                        value: row.phone_number,
+                        text: row.user_name + "(" + row.phone_number + ")"
+                    }))
+                    next()
+                    console.log(stats.contacts)
+                })
             }
         ], (err) => {
             // get a row count of some tables
@@ -199,10 +217,78 @@ module.exports = function(app) {
                 stats: stats,
                 status: "Online",
                 page: "Dashboard",
-                back: "Version 2.0"
+                back: "Version 2.0",
+                form: {
+                    title: "Send a quick message",
+                    action: "/quickmessage",
+                    method: "post",
+                    fields: [{
+                        name: "Select Contacts",
+                        select: true,
+                        multiple: "multiple",
+                        add_class: "col-xs-3",
+                        selects: stats.contacts
+                    }, {
+                        name: "Subject",
+                        type: "text"
+                    }, {
+                        name: "Enter message",
+                        textarea: true
+                    }]
+                }
             })
         })
 
+    })
+
+    app.post("/quickmessage", (req, res) => {
+        console.log(req.body)
+
+
+        var numbers = []
+        var convertedNumbers = []
+        if (req.body["Select Contacts"] instanceof Array) {
+            Object.keys(req.body["Select Contacts"]).map(function(number) {
+                if (Number(number)) {
+                    numbers.push(number)
+                }
+            })
+        } else {
+            numbers.push(req.body["Select Contacts"])
+        }
+
+        // send the numbers to send the sms.
+        numbers.map((number) => {
+            var phoneNumber = phoneUtil.parse(number, 'KE');
+
+            converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
+
+            convertedNumbers.push(converted)
+        })
+
+        var resultString = ""
+        convertedNumbers.map((num) => {
+            // remove the spaces
+            resultString = resultString + num.replace(/ /g, '') + ","
+        })
+
+        console.log(resultString)
+
+        var message = req.body["Subject"] + "\n\n" + req.body["Enter message"] + "\n\n"
+
+        getUsernamePassword("dctheta", function(err, results) {
+            console.log(results)
+            sendMessage([resultString, message, results[0], results[1]], (err, results) => {
+                console.log(results)
+                    // reply on the callback of sending the messages
+                res.render('new_message/send_report', {
+                    session: req.session,
+                    results: results.SMSMessageData,
+                    message: results,
+                    layout: "bulkSMS"
+                });
+            })
+        })
     })
 
 
@@ -661,3 +747,102 @@ module.exports = function(app) {
     })
 
 }
+
+
+// africasTalking 
+// We need this to build our post string
+var querystring = require('querystring');
+var https = require('https');
+// Your login credentials
+
+function getUsernamePassword(id, cb) {
+    client.execute("select * from sms_master.org_details;", function(err, results) {
+        console.log(results)
+        assert.ifError(err)
+            // body...
+        cb(err, [results.rows[0].username, results.rows[0].key])
+    })
+}
+
+function sendMessage(dataArray, cb) {
+
+    console.log(dataArray)
+
+    // Define the recipient numbers in a comma separated string
+    // Numbers should be in international format as shown
+    var to = dataArray[0]
+
+    // And of course we want our recipients to know what we really do
+    var message = dataArray[1];
+
+    var username = dataArray[2];
+    var apikey = dataArray[3];
+
+    console.log(username, apikey, message)
+
+    var postData = {
+        "message": message,
+        "recipient": to,
+        "username": "Branson",
+        "apikey": "908b353c4496d48ab1167ee4d2ffae1477059578",
+        "senderId": "DC-THETA"
+    }
+
+    console.log(postData)
+
+    request.post({
+        url: 'http://mobilesasa.com/sendsmsjson.php',
+        body: postData,
+        json: true
+    }, function(error, response, body) {
+        console.log(body)
+        if (!error && response.statusCode == 200) {
+            console.log(body)
+        }
+        cb(null, JSON.stringify(body, null, "\t"))
+    })
+
+
+}
+
+
+// request.post({
+//     url: 'http://mobilesasa.com/accountbalance.php',
+//     body: {
+//         username: "Branson",
+//         apikey: "908b353c4496d48ab1167ee4d2ffae1477059578",
+//     }
+// }, function(error, response, body) {
+//     console.log(body)
+//     if (!error && response.statusCode == 200) {
+//         console.log(body)
+//     }
+//     // cb(null, JSON.stringify(body, null, "\t"))
+// })
+
+
+
+var querystring = require('querystring');
+var request = require('request');
+
+var form = {
+    username: "Branson",
+    apikey: "908b353c4496d48ab1167ee4d2ffae1477059578",
+};
+
+var formData = querystring.stringify(form);
+var contentLength = formData.length;
+
+request({
+    headers: {
+        'Content-Length': contentLength,
+        'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    uri: 'http://mobilesasa.com/accountbalance.php',
+    body: formData,
+    method: 'POST'
+}, function(err, res, body) {
+    if (!err && res.statusCode == 200) {
+        console.log(body)
+    }
+});

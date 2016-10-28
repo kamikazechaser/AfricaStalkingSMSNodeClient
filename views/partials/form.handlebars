@@ -14,7 +14,7 @@
 			<div class="row">
 				{{#each form.fields as |field|}}
 					{{#if field.select}}
-					<div class="col-xs-4">
+					<div class="col-xs-12">
 					<label for="{{field.name}}">{{field.name}}</label>
 					<select class="form-control select2" name="{{field.name}}" {{multiple}}>
 						{{#each field.selects as |select|}}
@@ -23,11 +23,23 @@
 					</select>
 					</div>
 					{{else}}
-					<div class="col-xs-4">
-						<label for="{{field.name}}">{{field.name}}</label>
-						<input id="{{field.name}}" name="{{field.name}}" value="{{field.value}}" type="{{field.type}}" class="form-control {{field.add_class}}" placeholder="{{field.placeholder}}" {{field.attrs}}>
-					</div>
+
+						{{#if field.textarea}}
+							<div class="col-xs-12">
+			                  <label>{{field.name}}</label>
+			                  <textarea name="{{field.name}}" class="form-control" value="{{field.value}}" rows="3" placeholder="{{field.placeholder}}"></textarea>
+			                </div>
+						{{else}}
+							<div class="col-xs-12">
+								<label for="{{field.name}}">{{field.name}}</label>
+								<input id="{{field.name}}" name="{{field.name}}" value="{{field.value}}" type="{{field.type}}" class="form-control {{field.add_class}}" placeholder="{{field.placeholder}}" {{field.attrs}}>
+							</div>
+						{{/if}}
+					
 					{{/if}}
+
+					
+
 				{{/each}}
 			</div>
 		</div>
