@@ -261,7 +261,7 @@ module.exports = function(app) {
         numbers.map((number) => {
             var phoneNumber = phoneUtil.parse(number, 'KE');
 
-            converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
+            converted = phoneUtil.format(Number(phoneNumber), PNF.INTERNATIONAL)
 
             convertedNumbers.push(converted)
         })
