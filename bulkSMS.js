@@ -259,11 +259,13 @@ module.exports = function(app) {
 
         // send the numbers to send the sms.
         numbers.map((number) => {
-            var phoneNumber = phoneUtil.parse(number, 'KE');
+            if (Number(number)) {
+                var phoneNumber = phoneUtil.parse(number, 'KE');
 
-            converted = phoneUtil.format(Number(phoneNumber), PNF.INTERNATIONAL)
+                converted = phoneUtil.format(Number(phoneNumber), PNF.INTERNATIONAL)
 
-            convertedNumbers.push(converted)
+                convertedNumbers.push(converted)
+            }
         })
 
         var resultString = ""
