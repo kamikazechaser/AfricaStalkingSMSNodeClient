@@ -320,9 +320,9 @@ function sendMessage(dataArray, cb) {
     var postData = {
         "message": message,
         "recipient": to,
-        "username": username,
-        "apikey": apikey,
-        "senderId": "MOBILESASA"
+        "username": "Branson",
+        "apikey": "908b353c4496d48ab1167ee4d2ffae1477059578",
+        "senderId": "DC-THETA"
     }
 
     console.log(postData)
