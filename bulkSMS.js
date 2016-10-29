@@ -206,7 +206,7 @@ module.exports = function(app) {
                         text: row.user_name + "(" + row.phone_number + ")"
                     }))
                     next()
-                    console.log(stats.contacts)
+                        // console.log(stats.contacts)
                 })
             }
         ], (err) => {
@@ -248,22 +248,27 @@ module.exports = function(app) {
         var numbers = []
         var convertedNumbers = []
         if (req.body["Select Contacts"] instanceof Array) {
+            console.log("an array was sent")
             Object.keys(req.body["Select Contacts"]).map(function(number) {
                 if (Number(number)) {
                     numbers.push(number)
                 }
             })
         } else {
+            console.log("a single number was sent")
             numbers.push(req.body["Select Contacts"])
         }
 
         // send the numbers to send the sms.
+        console.log(numbers.length)
         numbers.map((number) => {
+            console.log("converting " + number + "to KE")
             if (Number(number)) {
                 var phoneNumber = phoneUtil.parse(number, 'KE');
 
-                converted = phoneUtil.format(Number(phoneNumber), PNF.INTERNATIONAL)
+                converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
 
+                console.log(converted)
                 convertedNumbers.push(converted)
             }
         })
