@@ -262,7 +262,7 @@ module.exports = function(app) {
         // send the numbers to send the sms.
         console.log(numbers.length)
         numbers.map((number) => {
-            console.log("converting " + number + "to KE")
+            console.log("converting " + number + " to KE")
             if (Number(number)) {
                 var phoneNumber = phoneUtil.parse(number, 'KE');
 
