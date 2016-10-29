@@ -248,12 +248,15 @@ module.exports = function(app) {
         var numbers = []
         var convertedNumbers = []
         if (req.body["Select Contacts"] instanceof Array) {
+            console.log(req.body["Select Contacts"])
             console.log("an array was sent")
-            Object.keys(req.body["Select Contacts"]).map(function(number) {
-                if (Number(number)) {
-                    numbers.push(number)
+            req.body["Select Contacts"].map(function(contact) {
+                if (Number(contact)) {
+                    console.log("selected " + contact)
+                    numbers.push(contact)
                 }
             })
+            console.log(numbers)
         } else {
             console.log("a single number was sent")
             numbers.push(req.body["Select Contacts"])
@@ -276,7 +279,7 @@ module.exports = function(app) {
         var resultString = ""
         convertedNumbers.map((num) => {
             // remove the spaces
-            resultString = resultString + num.replace(/ /g, '') + ","
+            resultString = resultString + num.replace(/ /g, '') + (convertedNumbers.indexOf(num) == (convertedNumbers.length - 1) ? "" : ",")
         })
 
         console.log(resultString)
@@ -293,6 +296,7 @@ module.exports = function(app) {
                 layout: "bulkSMS"
             });
         })
+
     })
 
 
