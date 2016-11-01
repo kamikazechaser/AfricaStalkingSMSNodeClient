@@ -223,14 +223,18 @@ module.exports = function(app) {
                     action: "/quickmessage",
                     method: "post",
                     fields: [{
+                        name: "Subject",
+                        type: "text"
+                    }, {
+                        name: "Prefix",
+                        type: "text",
+                        placeholder: "Good morning, hey, Praise the lord....."
+                    }, {
                         name: "Select Contacts",
                         select: true,
                         multiple: "multiple",
                         add_class: "col-xs-3",
                         selects: stats.contacts
-                    }, {
-                        name: "Subject",
-                        type: "text"
                     }, {
                         name: "Enter message",
                         textarea: true
@@ -262,8 +266,43 @@ module.exports = function(app) {
             numbers.push(req.body["Select Contacts"])
         }
 
-        // send the numbers to send the sms.
-        console.log(numbers.length)
+        var resolvedNumbers = []
+        var sendresults = []
+
+        // get the details of the user, save the quick message, save the contacts who were involved
+        async.each(numbers, (number, nextNumberCb) => {
+            client.execute("select * from contacts where phone_number = ? ALLOW FILTERING;", [number], (err, results) => {
+                assert.ifError(err)
+                var firstname = results.rows[0].user_name.split(" ")[0]
+
+                console.log(results.rows[0].id, results.rows[0].user_name)
+                var completeData = {
+                    id: results.rows[0].id,
+                    name: firstname,
+                    number: convert(number),
+                    message: req.body["Subject"] + "\n\n" + req.body["Prefix"] + " " + firstname + ",\n " + req.body["Enter message"] + "\n\n"
+                }
+                console.log(completeData.message)
+
+                // send the message
+                sendMessage([completeData.number, completeData.message], (err, results) => {
+                    assert.ifError(err)
+                    sendresults.push(results)
+                    nextNumberCb()
+                })
+
+            })
+        }, function() {
+            // proceed
+            res.render('new_message/send_report', {
+                session: req.session,
+                // results: results.SMSMessageData,
+                message: sendresults,
+                layout: "bulkSMS"
+            });
+        })
+
+        // convert the numbers to the correct format
         numbers.map((number) => {
             console.log("converting " + number + " to KE")
             if (Number(number)) {
@@ -276,26 +315,41 @@ module.exports = function(app) {
             }
         })
 
+        function convert(number) {
+            if (Number(number)) {
+                var phoneNumber = phoneUtil.parse(number, 'KE');
+                return phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
+            }
+        }
+
+        // create one long string of numbers
         var resultString = ""
         convertedNumbers.map((num) => {
             // remove the spaces
             resultString = resultString + num.replace(/ /g, '') + (convertedNumbers.indexOf(num) == (convertedNumbers.length - 1) ? "" : ",")
         })
 
-        console.log(resultString)
-
+        //create a long string of the actual message 
         var message = req.body["Subject"] + "\n\n" + req.body["Enter message"] + "\n\n"
 
-        sendMessage([resultString, message], (err, results) => {
-            console.log(results)
-                // reply on the callback of sending the messages
-            res.render('new_message/send_report', {
-                session: req.session,
-                results: results.SMSMessageData,
-                message: results,
-                layout: "bulkSMS"
-            });
-        })
+        // send the message with the contacted details
+        // sendMessage([resultString, message], (err, results) => {
+        //     assert.ifError(err)
+        //     res.render('new_message/send_report', {
+        //         session: req.session,
+        //         results: results.SMSMessageData,
+        //         message: results,
+        //         layout: "bulkSMS"
+        //     });
+        // })
+        // res.render('new_message/send_report', {
+        //     session: req.session,
+        //     // results: results.SMSMessageData,
+        //     // message: results,
+        //     layout: "bulkSMS"
+        // });
+
+
 
     })
 

@@ -156,7 +156,52 @@ var creator = function() {
                 organisation: "timeuuid"
             },
             primary_keys: ["user_name"]
-        })
+        }),
+
+        cassie.tableMaker({
+            keyspace: "sms_master",
+            table: "sent_messages",
+            record: {
+                id: "timeuuid",
+                title: "text",
+                message: "text"
+            },
+            primary_keys: ["id"]
+        }),
+
+        cassie.tableMaker({
+            keyspace: "sms_master",
+            table: "groups_sent_messages",
+            record: {
+                id: "timeuuid",
+                group: "timeuuid",
+                message: "text"
+            },
+            primary_keys: ["id"]
+        }),
+
+        cassie.tableMaker({
+            keyspace: "sms_master",
+            table: "quick_sent_messages",
+            record: {
+                id: "timeuuid",
+                message: "text"
+            },
+            primary_keys: ["id"]
+        }),
+
+        cassie.tableMaker({
+            keyspace: "sms_master",
+            table: "contacts_quick_messages",
+            record: {
+                id: "timeuuid",
+                quick_message: "timeuuid",
+                contact: "text"
+            },
+            primary_keys: ["id"]
+        }),
+
+
     ]
 
     console.log(structure)
