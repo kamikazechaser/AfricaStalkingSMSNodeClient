@@ -8,6 +8,9 @@ var PNF = require('google-libphonenumber').PhoneNumberFormat;
 var request = require("request")
 const cassie = require("./query_creator")
 const accounting = require("accounting")
+var querystring = require('querystring');
+var request = require('request');
+
 
 
 
@@ -267,97 +270,18 @@ module.exports = function(app) {
             numbers.push(req.body["Select Contacts"])
         }
 
-        var resolvedNumbers = []
-        var sendresults = []
-
-        // get the details of the user, save the quick message, save the contacts who were involved
-        async.each(numbers, (number, nextNumberCb) => {
-                client.execute("select * from contacts where phone_number = ? ALLOW FILTERING;", [number], (err, results) => {
-                    assert.ifError(err)
-                    var firstname = results.rows[0].user_name.split(" ")[0]
-
-                    var completeData = {
-                        id: results.rows[0].id,
-                        name: firstname,
-                        number: convert(number),
-                        message: req.body["Subject"] + "\n\n" + req.body["Prefix"] + " " + firstname + ",\n " + req.body["Enter message"] + "\n\n"
-                    }
-
-                    // send the message
-                    sendMessage([completeData.number, completeData.message], (err, results) => {
-                        assert.ifError(err)
-                        console.log(results)
-                        completeData.sending_results = results.response[0]
-                        sendresults.push(completeData)
-                        nextNumberCb()
-                    })
-
-                })
-            },
-            function() {
-                var batch = []
-                    // insert the results to the db in a batch
-
-                const instance = {
-                    id: timeId.now(),
-                    admin: req.session.user_id
-                }
-
-                batch.push(cassie.insertMaker({
-                    keyspace: "sms_master",
-                    table: "message_instance",
-                    record: instance
-                }))
-
-                // message_instance
-                sendresults.map((result) => {
-                        console.log("result", result)
-
-                        const message = {
-                            id: timeId.now(),
-                            message: result.message,
-                            instance: instance.id,
-                            cost: Number(result.sending_results.cost)
-                        }
-
-                        console.log(message)
-
-                        // create the message
-                        batch.push(cassie.insertMaker({
-                                keyspace: "sms_master",
-                                table: "quick_sent_messages",
-                                record: message
-                            }))
-                            // save that the message was sent to this user
-                        batch.push(cassie.insertMaker({
-                            keyspace: "sms_master",
-                            table: "contacts_quick_messages",
-                            record: {
-                                id: timeId.now(),
-                                contact: result.id,
-                                quick_message: message.id
-                            }
-                        }))
-                    })
-                    // save the message in the db before sending,
-
-
-                client.batch(batch, { prepare: true }, (err, results) => {
-                    assert.ifError(err)
-                    res.redirect("/sendResults/" + instance.id)
-
-                })
-
-            })
-
-
-        function convert(number) {
-            if (Number(number)) {
-                var phoneNumber = phoneUtil.parse(number, 'KE');
-                return phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
-            }
+        var messageOptions = {
+            req: req,
+            res: res,
+            subject: req.body["Subject"],
+            prefix: req.body["Prefix"],
+            body: req.body["Enter message"]
         }
+
+        require("./sender")(numbers, messageOptions)
     })
+
+
 
 
     app.get("/sendResults/:instance_id", auth, (req, res) => {
@@ -376,7 +300,7 @@ module.exports = function(app) {
 
                     client.execute(query, [req.params.instance_id], function(err, result) {
                         assert.ifError(err)
-                        console.log(result)
+                            // console.log(result)
                         instance.messages_number = result.rows[0].count
                         next()
                     })
@@ -386,7 +310,7 @@ module.exports = function(app) {
 
                     client.execute(query, [req.params.instance_id], { prepare: true }, function(err, result) {
                         assert.ifError(err)
-                        console.log(result)
+                            // console.log(result)
                         var sum = 0
                         result.rows.map((row) => {
                             sum = Number(sum) + Number(row.cost)
@@ -394,6 +318,33 @@ module.exports = function(app) {
                         instance.messages_sum = accounting.toFixed(Number(sum), 2);
                         next()
                     })
+                },
+                function getBalance(next) {
+
+                    var form = {
+                        username: "Branson",
+                        apikey: "908b353c4496d48ab1167ee4d2ffae1477059578",
+                    };
+
+                    var formData = querystring.stringify(form);
+                    var contentLength = formData.length;
+
+                    request({
+                        headers: {
+                            'Content-Length': contentLength,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        uri: 'http://mobilesasa.com/accountbalance.php',
+                        body: formData,
+                        method: 'POST'
+                    }, function(err, res, body) {
+                        if (!err && res.statusCode == 200) {
+                            console.log()
+
+                            instance.balance = JSON.parse(body).balance
+                            next()
+                        }
+                    });
                 }
             ], function(err) {
                 res.render('new_message/send_report', {
@@ -677,8 +628,8 @@ module.exports = function(app) {
         // remove the records where the contact exists
 
         var query = {
-            query: `INSERT INTO sms_master.contacts (id,user_name, phone_number) VALUES (?, ?, ?);`,
-            params: [req.params.contact_id, req.body.Name, req.body["Telephone Number"]]
+            query: `INSERT INTO sms_master.contacts (id,organisation,user_name, phone_number) VALUES (?, ?,?, ?);`,
+            params: [req.params.contact_id, req.session.org_id, req.body.Name, req.body["Telephone Number"]]
         }
 
         console.log(query)
@@ -692,9 +643,9 @@ module.exports = function(app) {
 
             // remove him from the groups records
             client.execute("delete from sms_master.groups_per_contact where contact=?", [contact_id], function(err, result) {
-                assert.ifError(err);
-
-                // insert 
+                // assert.ifError(err);
+                console.log("deleted the groups the contact is in so far")
+                    // insert 
                 req.body["Select groups"].map((group) => {
                     var assign = [{
                         query: `INSERT INTO sms_master.groups_per_contact (id,contact,contact_name, group) VALUES (?,?, ?, ?);`,
@@ -921,29 +872,3 @@ function sendMessage(dataArray, cb) {
 
 
 }
-
-
-var querystring = require('querystring');
-var request = require('request');
-
-var form = {
-    username: "Branson",
-    apikey: "908b353c4496d48ab1167ee4d2ffae1477059578",
-};
-
-var formData = querystring.stringify(form);
-var contentLength = formData.length;
-
-request({
-    headers: {
-        'Content-Length': contentLength,
-        'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    uri: 'http://mobilesasa.com/accountbalance.php',
-    body: formData,
-    method: 'POST'
-}, function(err, res, body) {
-    if (!err && res.statusCode == 200) {
-        console.log(body)
-    }
-});

@@ -56,13 +56,18 @@ module.exports = function(app) {
                         action: "",
                         method: "post",
                         fields: [{
+                            name: "Prefix",
+                            placeholder: " ",
+                            type: "text"
+                        }, {
                             name: "Title",
                             placeholder: " ",
                             type: "text"
                         }, {
                             name: "Content",
                             placeholder: " ",
-                            type: "textarea"
+                            type: "textarea",
+                            textarea: true
                         }]
                     }
                 }
@@ -72,6 +77,7 @@ module.exports = function(app) {
         })
         .post(auth, (req, res) => {
             req.session.message = {
+                prefix: req.body["Prefix"],
                 title: req.body["Title"],
                 message: req.body["Content"]
             }
@@ -143,37 +149,48 @@ module.exports = function(app) {
                 }
             })
             // send the numbers to send the sms.
-        numbers.map((number) => {
-            var phoneNumber = phoneUtil.parse(number, 'KE');
 
-            converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
+        var messageOptions = {
+            req: req,
+            res: res,
+            subject: req.session.message.title,
+            prefix: req.session.message.prefix,
+            body: req.session.message.message
+        }
 
-            convertedNumbers.push(converted)
-        })
+        require("../../sender")(numbers, messageOptions)
 
-        var resultString = ""
-        convertedNumbers.map((num) => {
-            // remove the spaces
-            resultString = resultString + num.replace(/ /g, '') + ","
-        })
+        // numbers.map((number) => {
+        //     var phoneNumber = phoneUtil.parse(number, 'KE');
 
-        console.log(resultString)
+        //     converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
 
-        var message = req.session.message.title + "\n\n" + req.session.message.message
+        //     convertedNumbers.push(converted)
+        // })
 
-        getUsernamePassword("dctheta", function(err, results) {
-            console.log(results)
-            sendMessage([resultString, message, results[0], results[1]], (err, results) => {
-                console.log(results)
-                    // reply on the callback of sending the messages
-                res.render('new_message/send_report', {
-                    session: req.session,
-                    results: results.SMSMessageData,
-                    message: results,
-                    layout: "bulkSMS"
-                });
-            })
-        })
+        // var resultString = ""
+        // convertedNumbers.map((num) => {
+        //     // remove the spaces
+        //     resultString = resultString + num.replace(/ /g, '') + ","
+        // })
+
+        // console.log(resultString)
+
+        // var message = req.session.message.title + "\n\n" + req.session.message.message
+
+        // getUsernamePassword("dctheta", function(err, results) {
+        //     console.log(results)
+        //     sendMessage([resultString, message, results[0], results[1]], (err, results) => {
+        //         console.log(results)
+        //             // reply on the callback of sending the messages
+        //         res.render('new_message/send_report', {
+        //             session: req.session,
+        //             results: results.SMSMessageData,
+        //             message: results,
+        //             layout: "bulkSMS"
+        //         });
+        //     })
+        // })
     })
 
     app.get("/new_message/:saved_message_id", function(req, res) {
@@ -207,135 +224,28 @@ module.exports = function(app) {
 
                 var phone_numbers = []
 
-                async.eachSeries(result.rows, function(item, next) {
-                    // console.log(item)
+                async.each(result.rows, function(item, next) {
                     client.execute("select * from sms_master.contacts where id=?", [item.contact], function(err, result) {
-                        // console.log(result)
-                        if (!err) {
-
-                            result.rows.map((row) => {
-                                // Parse number with country code. 
-                                // console.log(row.phone_number)
-                                var phoneNumber = phoneUtil.parse(row.phone_number, 'KE');
-
-                                converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
-
-                                phone_numbers.push(converted)
-                            })
-                        }
+                        assert.ifError(err)
+                        phone_numbers.push(result.rows[0].phone_number)
                         next()
                     })
 
                 }, function(err) {
 
-                    // console.log(phone_numbers)
-                    // construct the string
-                    var resultString = ""
-                    phone_numbers.map((num) => {
-                        // remove the spaces
-                        resultString = resultString + num.replace(/ /g, '') + ","
-                    })
+                    var messageOptions = {
+                        req: req,
+                        res: res,
+                        subject: req.session.message.title,
+                        prefix: req.session.message.prefix,
+                        body: req.session.message.message
+                    }
 
-                    // console.log(resultString)
-
-                    var message = req.session.message.title + "\n\n" + req.session.message.message
-
-                    sendMessage([resultString, message], (err, results) => {
-
-                            // console.log(results)
-                            // reply on the callback of sending the messages
-                            res.render('new_message/send_report', {
-                                session: req.session,
-                                groups: result.rows,
-                                results: results.SMSMessageData,
-                                layout: "bulkSMS"
-                            });
-                        })
-                        // test data
-
-                    // var responce = {
-                    //  "SMSMessageData": {
-                    //      "Message": "Sent to 2/2 Total Cost: KES 2.0000",
-                    //      "Recipients": [{
-                    //          "number": "+254711657108",
-                    //          "status": "Success",
-                    //          "cost": "KES 1.0000",
-                    //          "messageId": "ATXid_405d837f3991060dd2ef7c3bc717dab7"
-                    //      }, {
-                    //          "number": "+254703917754",
-                    //          "status": "Success",
-                    //          "cost": "KES 1.0000",
-                    //          "messageId": "ATXid_0ac5245b257fefead5d4a70b2c0a1ef5"
-                    //      }]
-                    //  }
-                    // }
-
-                    // res.render('new_message/send_report', {
-                    //  session: req.session,
-                    //  groups: result.rows,
-                    //  results:responce.SMSMessageData,
-                    //  layout: "bulkSMS"
-                    // });
+                    require("../../sender")(phone_numbers, messageOptions)
                 })
 
             }
         })
 
-    })
-}
-
-
-
-// africasTalking 
-// We need this to build our post string
-var querystring = require('querystring');
-var https = require('https');
-// Your login credentials
-
-function getUsernamePassword(id, cb) {
-    client.execute("select * from sms_master.org_details;", function(err, results) {
-        console.log(results)
-        assert.ifError(err)
-            // body...
-        cb(err, [results.rows[0].username, results.rows[0].key])
-    })
-}
-
-function sendMessage(dataArray, cb) {
-
-    console.log(dataArray)
-
-    // Define the recipient numbers in a comma separated string
-    // Numbers should be in international format as shown
-    var to = dataArray[0]
-
-    // And of course we want our recipients to know what we really do
-    var message = dataArray[1];
-
-    var username = dataArray[2];
-    var apikey = dataArray[3];
-
-    console.log(username, apikey, message)
-
-    var postData = {
-        "message": message,
-        "recipient": to,
-        "username": "Branson",
-        "apikey": "908b353c4496d48ab1167ee4d2ffae1477059578",
-        "senderId": "DC-THETA"
-    }
-
-    console.log(postData)
-
-    request.post({
-        url: 'http://mobilesasa.com/sendsmsjson.php',
-        body: postData,
-        json: true
-    }, function(error, response, body) {
-        console.log(body)
-        if (!error && response.statusCode == 200) {
-            console.log(body)
-        }
-        cb(null, JSON.stringify(body, null, "\t"))
     })
 }
