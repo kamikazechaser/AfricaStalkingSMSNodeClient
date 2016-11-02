@@ -10,6 +10,7 @@ const cassie = require("./query_creator")
 const accounting = require("accounting")
 var querystring = require('querystring');
 var request = require('request');
+var moment = require('moment');
 
 
 
@@ -281,8 +282,47 @@ module.exports = function(app) {
         require("./sender")(numbers, messageOptions)
     })
 
+    app.get("/analysis", auth, (req, res) => {
+        const query = `select * from message_instance where organisation=? allow filtering`;
+        var instance = {}
 
+        client.execute(query, [req.session.org_id], function(err, result) {
+            assert.ifError(err)
+            result.rows.map((row) => { row.time = moment(row.id.getDate()).calendar() })
 
+            async.each(result.rows, (instance, nextRow) => {
+                // get how many people were reached
+                instance.cost = 0
+                async.parallel([
+                    function(next) {
+                        const query = `select * from quick_sent_messages where instance=? allow FILTERING`;
+
+                        client.execute(query, [instance.id], { prepare: true }, function(err, result) {
+                            assert.ifError(err)
+                                // console.log(result)
+                            var sum = 0
+                            result.rows.map((row) => {
+                                instance.cost = Number(instance.cost) + Number(row.cost)
+                            })
+                            instance.cost = accounting.formatMoney(accounting.toFixed(Number(instance.cost), 2), "Ksh ");
+                            instance.contactsReached = result.rows.length
+                            next()
+                        })
+                    }
+
+                ], nextRow)
+
+            }, function(err) {
+                res.render("new_message/send_instances", {
+                    session: req.session,
+                    instances: result.rows,
+                    layout: "bulkSMS",
+                    name: "Bulk Message Instances"
+                })
+            })
+
+        })
+    })
 
     app.get("/sendResults/:instance_id", auth, (req, res) => {
 

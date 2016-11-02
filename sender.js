@@ -60,7 +60,8 @@ module.exports = function(numbers, messageOptions, cb) {
 
             const instance = {
                 id: timeId.now(),
-                admin: req.session.user_id
+                admin: req.session.user_id,
+                organisation: req.session.organisation
             }
 
             batch.push(cassie.insertMaker({
