@@ -378,6 +378,7 @@ module.exports = function(app) {
                         assert.ifError(err)
                         console.log(result)
                         instance.messages_number = result.rows[0].count
+                        next()
                     })
                 },
                 function getTotalCost(next) {
@@ -391,14 +392,18 @@ module.exports = function(app) {
                             sum = Number(sum) + Number(row.cost)
                         })
                         instance.messages_sum = accounting.toFixed(Number(sum), 2);
+                        next()
                     })
                 }
-            ])
-            res.render('new_message/send_report', {
-                session: req.session,
-                instance: instance,
-                layout: "bulkSMS"
-            });
+            ], function(err) {
+                res.render('new_message/send_report', {
+                    session: req.session,
+                    instance: instance,
+                    layout: "bulkSMS"
+                });
+            })
+
+
         });
 
     })
