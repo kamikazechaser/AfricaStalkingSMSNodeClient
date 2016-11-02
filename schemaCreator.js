@@ -185,7 +185,7 @@ var creator = function() {
             table: "message_instance",
             record: {
                 id: "timeuuid",
-                admin: "timeuuid"
+                admin: "text"
             },
             primary_keys: ["id"]
         }),
