@@ -288,6 +288,7 @@ module.exports = function(app) {
 
         client.execute(query, [req.session.org_id], function(err, result) {
             assert.ifError(err)
+            console.log(result)
             result.rows.map((row) => { row.time = moment(row.id.getDate()).calendar() })
 
             async.each(result.rows, (instance, nextRow) => {

@@ -53,7 +53,7 @@ var client = new cassandra.Client(connectionOptions);
 //     })
 // })
 
-var organisation = "37dfc5c0-9abc-11e6-a62e-0a6f3f26f5ce"
+var organisation = "670d6f20-9ac4-11e6-8632-e1ee75bf3901"
 var batch = []
     // add organisation to get instances of an organisation
 client.execute("ALTER TABLE sms_master.message_instance ADD organisation timeuuid;", (err, results) => {
