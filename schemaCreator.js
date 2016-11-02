@@ -182,10 +182,22 @@ var creator = function() {
 
         cassie.tableMaker({
             keyspace: "sms_master",
+            table: "message_instance",
+            record: {
+                id: "timeuuid",
+                admin: "timeuuid"
+            },
+            primary_keys: ["id"]
+        }),
+
+        cassie.tableMaker({
+            keyspace: "sms_master",
             table: "quick_sent_messages",
             record: {
                 id: "timeuuid",
-                message: "text"
+                cost: "float",
+                instance: "timeuuid",
+                message: "text",
             },
             primary_keys: ["id"]
         }),
@@ -196,7 +208,7 @@ var creator = function() {
             record: {
                 id: "timeuuid",
                 quick_message: "timeuuid",
-                contact: "text"
+                contact: "timeuuid"
             },
             primary_keys: ["id"]
         }),

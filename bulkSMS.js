@@ -6,7 +6,8 @@ const cassandra = require('cassandra-driver');
 var phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 var PNF = require('google-libphonenumber').PhoneNumberFormat;
 var request = require("request")
-
+const cassie = require("./query_creator")
+const accounting = require("accounting")
 
 
 
@@ -271,49 +272,84 @@ module.exports = function(app) {
 
         // get the details of the user, save the quick message, save the contacts who were involved
         async.each(numbers, (number, nextNumberCb) => {
-            client.execute("select * from contacts where phone_number = ? ALLOW FILTERING;", [number], (err, results) => {
-                assert.ifError(err)
-                var firstname = results.rows[0].user_name.split(" ")[0]
-
-                console.log(results.rows[0].id, results.rows[0].user_name)
-                var completeData = {
-                    id: results.rows[0].id,
-                    name: firstname,
-                    number: convert(number),
-                    message: req.body["Subject"] + "\n\n" + req.body["Prefix"] + " " + firstname + ",\n " + req.body["Enter message"] + "\n\n"
-                }
-                console.log(completeData.message)
-
-                // send the message
-                sendMessage([completeData.number, completeData.message], (err, results) => {
+                client.execute("select * from contacts where phone_number = ? ALLOW FILTERING;", [number], (err, results) => {
                     assert.ifError(err)
-                    sendresults.push(results)
-                    nextNumberCb()
+                    var firstname = results.rows[0].user_name.split(" ")[0]
+
+                    var completeData = {
+                        id: results.rows[0].id,
+                        name: firstname,
+                        number: convert(number),
+                        message: req.body["Subject"] + "\n\n" + req.body["Prefix"] + " " + firstname + ",\n " + req.body["Enter message"] + "\n\n"
+                    }
+
+                    // send the message
+                    sendMessage([completeData.number, completeData.message], (err, results) => {
+                        assert.ifError(err)
+                        console.log(results)
+                        completeData.sending_results = results.response[0]
+                        sendresults.push(completeData)
+                        nextNumberCb()
+                    })
+
+                })
+            },
+            function() {
+                var batch = []
+                    // insert the results to the db in a batch
+
+                const instance = {
+                    id: timeId.now(),
+                    admin: req.session.user_id
+                }
+
+                batch.push(cassie.insertMaker({
+                    keyspace: "sms_master",
+                    table: "message_instance",
+                    record: instance
+                }))
+
+                // message_instance
+                sendresults.map((result) => {
+                        console.log("result", result)
+
+                        const message = {
+                            id: timeId.now(),
+                            message: result.message,
+                            instance: instance.id,
+                            cost: Number(result.sending_results.cost)
+                        }
+
+                        console.log(message)
+
+                        // create the message
+                        batch.push(cassie.insertMaker({
+                                keyspace: "sms_master",
+                                table: "quick_sent_messages",
+                                record: message
+                            }))
+                            // save that the message was sent to this user
+                        batch.push(cassie.insertMaker({
+                            keyspace: "sms_master",
+                            table: "contacts_quick_messages",
+                            record: {
+                                id: timeId.now(),
+                                contact: result.id,
+                                quick_message: message.id
+                            }
+                        }))
+                    })
+                    // save the message in the db before sending,
+
+
+                client.batch(batch, { prepare: true }, (err, results) => {
+                    assert.ifError(err)
+                    res.redirect("/sendResults/" + instance.id)
+
                 })
 
             })
-        }, function() {
-            // proceed
-            res.render('new_message/send_report', {
-                session: req.session,
-                // results: results.SMSMessageData,
-                message: sendresults,
-                layout: "bulkSMS"
-            });
-        })
 
-        // convert the numbers to the correct format
-        numbers.map((number) => {
-            console.log("converting " + number + " to KE")
-            if (Number(number)) {
-                var phoneNumber = phoneUtil.parse(number, 'KE');
-
-                converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
-
-                console.log(converted)
-                convertedNumbers.push(converted)
-            }
-        })
 
         function convert(number) {
             if (Number(number)) {
@@ -321,37 +357,54 @@ module.exports = function(app) {
                 return phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
             }
         }
-
-        // create one long string of numbers
-        var resultString = ""
-        convertedNumbers.map((num) => {
-            // remove the spaces
-            resultString = resultString + num.replace(/ /g, '') + (convertedNumbers.indexOf(num) == (convertedNumbers.length - 1) ? "" : ",")
-        })
-
-        //create a long string of the actual message 
-        var message = req.body["Subject"] + "\n\n" + req.body["Enter message"] + "\n\n"
-
-        // send the message with the contacted details
-        // sendMessage([resultString, message], (err, results) => {
-        //     assert.ifError(err)
-        //     res.render('new_message/send_report', {
-        //         session: req.session,
-        //         results: results.SMSMessageData,
-        //         message: results,
-        //         layout: "bulkSMS"
-        //     });
-        // })
-        // res.render('new_message/send_report', {
-        //     session: req.session,
-        //     // results: results.SMSMessageData,
-        //     // message: results,
-        //     layout: "bulkSMS"
-        // });
+    })
 
 
+    app.get("/sendResults/:instance_id", auth, (req, res) => {
+
+        const query = `select * from message_instance where id=?`;
+        var instance = {}
+
+        client.execute(query, [req.params.instance_id], function(err, result) {
+            assert.ifError(err);
+            // console.log(result)
+            instance.details = result.rows[0]
+                // get count of messages in that instance
+            async.parallel([
+                function countMessages(next) {
+                    const query = `select count(*) from quick_sent_messages where instance=? allow FILTERING`;
+
+                    client.execute(query, [req.params.instance_id], function(err, result) {
+                        assert.ifError(err)
+                        console.log(result)
+                        instance.messages_number = result.rows[0].count
+                    })
+                },
+                function getTotalCost(next) {
+                    const query = `select * from quick_sent_messages where instance=? allow FILTERING`;
+
+                    client.execute(query, [req.params.instance_id], { prepare: true }, function(err, result) {
+                        assert.ifError(err)
+                        console.log(result)
+                        var sum = 0
+                        result.rows.map((row) => {
+                            sum = Number(sum) + Number(row.cost)
+                        })
+                        instance.messages_sum = accounting.toFixed(Number(sum), 2);
+                    })
+                }
+            ])
+            res.render('new_message/send_report', {
+                session: req.session,
+                instance: instance,
+                layout: "bulkSMS"
+            });
+        });
 
     })
+
+
+
 
 
     app.get("/contacts/delete/:contact_id", auth, (req, res) => {
@@ -846,18 +899,19 @@ function sendMessage(dataArray, cb) {
         "senderId": "DC-THETA"
     }
 
-    console.log(postData)
+    // console.log(postData)
 
     request.post({
         url: 'http://mobilesasa.com/sendsmsjson.php',
         body: postData,
         json: true
     }, function(error, response, body) {
-        console.log(body)
-        if (!error && response.statusCode == 200) {
-            console.log(body)
-        }
-        cb(null, JSON.stringify(body, null, "\t"))
+        // console.log(body)
+        assert.ifError(error)
+            // if (!error && response.statusCode == 200) {
+            //     console.log(body)
+            // }
+        cb(null, body)
     })
 
 

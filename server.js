@@ -82,8 +82,8 @@ app.use(session({
     store: new CassandraStore(sessionStoreOptions),
 }));
 
-// ALTER TABLE sms+master.organisations ADD location text;
 
+// disable cache in all browsers
 app.use(function(req, res, next) {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.header('Expires', '-1');
@@ -91,6 +91,19 @@ app.use(function(req, res, next) {
     next()
 });
 
+// redirect all non-www to www
+function wwwRedirect(req, res, next) {
+    if (req.headers.host.slice(0, 4) === 'www.') {
+        var newHost = req.headers.host.slice(4);
+        return res.redirect(301, req.protocol + '://' + newHost + req.originalUrl);
+    }
+    next();
+};
+// trust proxy
+app.set('trust proxy', true);
+app.use(wwwRedirect);
+
+// minify all html output
 app.use(minifyHTML({
     override: true,
     htmlMinifier: {
