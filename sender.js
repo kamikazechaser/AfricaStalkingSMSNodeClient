@@ -25,15 +25,51 @@ var timeId = cassandra.types.TimeUuid //new instance based on current date timeI
 
 
 module.exports = function(numbers, messageOptions, cb) {
+    console.log("workign on " + numbers.length + " of numbers;")
     var req = messageOptions.req
     var res = messageOptions.res
     var resolvedNumbers = []
     var sendresults = []
 
+    const instance = {
+        id: timeId.now(),
+        admin: req.session.user_id,
+        organisation: req.session.org_id
+    }
+
     // get the details of the user, save the quick message, save the contacts who were involved
     async.each(numbers, (number, nextNumberCb) => {
             client.execute("select * from contacts where phone_number = ? ALLOW FILTERING;", [number], (err, results) => {
                 assert.ifError(err)
+                    // store the thing to be batched
+                var batch = []
+
+                // remove duplicates, best to move the data to a new table with composite keys
+                // if (results.rows.length > 1) {
+                //     console.log(number + " has " + results.rows.length + " duplicates ")
+                //         // delete and insert again to get only one contact in that table
+
+                //     async.each(results.rows, (row, next) => {
+                //         client.execute("delete from sms_master.groups_per_contact where contact=?", [row.id], function(err, result) {
+                //             assert.ifError(err)
+                //             console.log("deleted the record" + row.id + " for " + number)
+                //             next()
+                //         })
+                //     }, function(argument) {
+
+                //         // insert it again using the first Id in memory
+                //         var assign = [{
+                //             query: `INSERT INTO sms_master.groups_per_contact (id,contact,contact_name, group) VALUES (?,?, ?, ?);`,
+                //             params: [results.rows[0].id, results.rows[0].contact, results.rows[0].contact_name, results.rows[0].group]
+                //         }]
+
+                //         client.batch(assign, function(err, result) {
+                //             assert.ifError(err);
+                //             console.log(result.rows)
+                //         });
+                //     })
+                // }
+
                 var firstname = results.rows[0].user_name.split(" ")[0]
 
                 var completeData = {
@@ -44,25 +80,59 @@ module.exports = function(numbers, messageOptions, cb) {
                 }
 
                 // send the message
-                sendMessage([completeData.number, completeData.message], (err, results) => {
+                // sendMessage([completeData.number, completeData.message], (err, results) => {
+                //     assert.ifError(err)
+                //     console.log(results)
+                //     completeData.sending_results = results.response[0]
+                //     sendresults.push(completeData)
+                // })
+                completeData.sending_results = {
+                    phonenumber: ' 254 717 121909',
+                    status: '1701',
+                    messageId: '1478092438865281889067d6be95dc',
+                    cost: '0.8',
+                    message: 'success'
+                }
+
+                sendresults.push(completeData)
+
+
+                const message = {
+                    id: timeId.now(),
+                    message: completeData.message,
+                    instance: instance.id,
+                    cost: Number(completeData.sending_results.cost)
+                }
+
+                batch.push(cassie.insertMaker({
+                    keyspace: "sms_master",
+                    table: "quick_sent_messages",
+                    record: message
+                }))
+
+                batch.push(cassie.insertMaker({
+                    keyspace: "sms_master",
+                    table: "contacts_quick_messages",
+                    record: {
+                        id: timeId.now(),
+                        contact: completeData.id,
+                        quick_message: message.id
+                    }
+                }))
+
+                client.batch(batch, { prepare: true }, (err, results) => {
                     assert.ifError(err)
-                    console.log(results)
-                    completeData.sending_results = results.response[0]
-                    sendresults.push(completeData)
                     nextNumberCb()
                 })
+
 
             })
         },
         function() {
+            var batches = []
             var batch = []
                 // insert the results to the db in a batch
-
-            const instance = {
-                id: timeId.now(),
-                admin: req.session.user_id,
-                organisation: req.session.organisation
-            }
+            console.log(instance)
 
             batch.push(cassie.insertMaker({
                 keyspace: "sms_master",
@@ -70,47 +140,10 @@ module.exports = function(numbers, messageOptions, cb) {
                 record: instance
             }))
 
-            // message_instance
-            sendresults.map((result) => {
-                    console.log("result", result)
-
-                    const message = {
-                        id: timeId.now(),
-                        message: result.message,
-                        instance: instance.id,
-                        cost: Number(result.sending_results.cost)
-                    }
-
-                    console.log(message)
-
-                    // create the message
-                    batch.push(cassie.insertMaker({
-                            keyspace: "sms_master",
-                            table: "quick_sent_messages",
-                            record: message
-                        }))
-                        // save that the message was sent to this user
-                    batch.push(cassie.insertMaker({
-                        keyspace: "sms_master",
-                        table: "contacts_quick_messages",
-                        record: {
-                            id: timeId.now(),
-                            contact: result.id,
-                            quick_message: message.id
-                        }
-                    }))
-                })
-                // save the message in the db before sending,
-
-
             client.batch(batch, { prepare: true }, (err, results) => {
-                // assert.ifError(err)
-
-                // cb(err)
+                assert.ifError(err)
                 res.redirect("/sendResults/" + instance.id)
-
             })
-
         })
 
 

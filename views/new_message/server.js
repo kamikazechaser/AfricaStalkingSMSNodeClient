@@ -88,17 +88,23 @@ module.exports = function(app) {
     app.get("/new_message/selectGroup", function(req, res) {
         client.execute("select * from sms_master.groups", function(err, result) {
             if (!err) {
-                console.log(result)
-                result.rows.map((row) => {
-                    row.send_link = "/send_message/" + row.id
-                    row.specify_members_link = "/controlled_send_message/" + row.id
+                // console.log(result)
+                // get number of contacts in group first
+                async.each(result.rows, (row, nextRow) => {
+                    client.execute("select * from sms_master.groups_per_contact where group=? allow FILTERING;", [row.id], function(err, result) {
+                        assert.ifError(err)
+                        row.send_link = "/send_message/" + row.id
+                        row.memberNumber = result.rows.length
+                        row.specify_members_link = "/controlled_send_message/" + row.id
+                        nextRow()
+                    })
+                }, function(argument) {
+                    res.render('new_message/selectGroup', {
+                        session: req.session,
+                        groups: result.rows,
+                        layout: "bulkSMS"
+                    });
                 })
-
-                res.render('new_message/selectGroup', {
-                    session: req.session,
-                    groups: result.rows,
-                    layout: "bulkSMS"
-                });
             }
         })
     })
@@ -146,6 +152,8 @@ module.exports = function(app) {
         Object.keys(req.body).map(function(number) {
                 if (Number(number)) {
                     numbers.push(number)
+                } else {
+                    console.log(number + " provided is an invalid number")
                 }
             })
             // send the numbers to send the sms.
@@ -157,40 +165,8 @@ module.exports = function(app) {
             prefix: req.session.message.prefix,
             body: req.session.message.message
         }
-
+        console.log("sending " + numbers.length + " from the controlled sender out of " + Object.keys(req.body).length)
         require("../../sender")(numbers, messageOptions)
-
-        // numbers.map((number) => {
-        //     var phoneNumber = phoneUtil.parse(number, 'KE');
-
-        //     converted = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
-
-        //     convertedNumbers.push(converted)
-        // })
-
-        // var resultString = ""
-        // convertedNumbers.map((num) => {
-        //     // remove the spaces
-        //     resultString = resultString + num.replace(/ /g, '') + ","
-        // })
-
-        // console.log(resultString)
-
-        // var message = req.session.message.title + "\n\n" + req.session.message.message
-
-        // getUsernamePassword("dctheta", function(err, results) {
-        //     console.log(results)
-        //     sendMessage([resultString, message, results[0], results[1]], (err, results) => {
-        //         console.log(results)
-        //             // reply on the callback of sending the messages
-        //         res.render('new_message/send_report', {
-        //             session: req.session,
-        //             results: results.SMSMessageData,
-        //             message: results,
-        //             layout: "bulkSMS"
-        //         });
-        //     })
-        // })
     })
 
     app.get("/new_message/:saved_message_id", function(req, res) {
@@ -223,15 +199,27 @@ module.exports = function(app) {
                 // console.log(result)
 
                 var phone_numbers = []
+                var invalidNumbers = []
 
                 async.each(result.rows, function(item, next) {
                     client.execute("select * from sms_master.contacts where id=?", [item.contact], function(err, result) {
                         assert.ifError(err)
-                        phone_numbers.push(result.rows[0].phone_number)
+                            // console.log(result.rows)
+                        result.rows[0] ? phone_numbers.push(result.rows[0].phone_number) : invalidNumbers.push(item.id)
                         next()
                     })
 
                 }, function(err) {
+
+                    console.log(invalidNumbers.length + " are invalid numbers in groups_per_contact")
+                    console.log("need to clean up :-)")
+                    invalidNumbers.map((number) => {
+                        console.log("attemmpting to delete " + number)
+                        client.execute("delete from sms_master.groups_per_contact where id=?", [number], function(err, result) {
+                            assert.ifError(err)
+                            console.log("deleted " + number + " from groups_per_contact")
+                        })
+                    })
 
                     var messageOptions = {
                         req: req,
@@ -240,7 +228,7 @@ module.exports = function(app) {
                         prefix: req.session.message.prefix,
                         body: req.session.message.message
                     }
-
+                    console.log(phone_numbers)
                     require("../../sender")(phone_numbers, messageOptions)
                 })
 

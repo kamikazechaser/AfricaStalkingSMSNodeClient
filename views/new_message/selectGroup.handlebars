@@ -23,7 +23,8 @@
 					<table class="table datatable table-bordered table-hover">
 						<thead>
 							<tr>
-								<th>name</th>
+								<th>Name</th>
+								<th>Contact Number</th>
 								<th>actions</th>
 							</tr>
 						</thead>
@@ -31,6 +32,8 @@
 							{{#each groups as |group|}}
 								<tr>
 									<td>{{group.name}}</td>
+									<td>{{group.memberNumber}}</td>
+									
 									<td >
 										<div class="btn-group pull-right">
 											<a href="{{specify_members_link}}" class="btn btn-info">Select Individual users</a>

@@ -53,35 +53,42 @@ var client = new cassandra.Client(connectionOptions);
 //     })
 // })
 
-var organisation = "670d6f20-9ac4-11e6-8632-e1ee75bf3901"
-var batch = []
-    // add organisation to get instances of an organisation
-    // client.execute("ALTER TABLE sms_master.message_instance ADD organisation timeuuid;", (err, results) => {
-    // assert.ifError(err)
-    // console.log("added the collumn")
+// var organisation = "37dfc5c0-9abc-11e6-a62e-0a6f3f26f5ce"
+// var batch = []
+//     // add organisation to get instances of an organisation
+//     // client.execute("ALTER TABLE sms_master.message_instance ADD organisation timeuuid;", (err, results) => {
+//     // assert.ifError(err)
+//     // console.log("added the collumn")
 
-client.execute("select * from sms_master.message_instance", (err, results) => {
-    assert.ifError(err)
+// client.execute("select * from sms_master.message_instance", (err, results) => {
+//     assert.ifError(err)
 
-    results.rows.map((row) => {
+//     results.rows.map((row) => {
 
-        const instance = {
-            id: row.id,
-            admin: row.admin,
-            organisation: organisation
-        }
+//         const instance = {
+//             id: row.id,
+//             admin: row.admin,
+//             organisation: organisation
+//         }
 
-        batch.push(cassie.insertMaker({
-            keyspace: "sms_master",
-            table: "message_instance",
-            record: instance
-        }))
-    })
+//         batch.push(cassie.insertMaker({
+//             keyspace: "sms_master",
+//             table: "message_instance",
+//             record: instance
+//         }))
+//     })
 
-    client.batch(batch, (err, results) => {
-        assert.ifError(err)
-        console.log("the data has been updated to the cluster succesfully")
-    })
-})
+//     client.batch(batch, (err, results) => {
+//         assert.ifError(err)
+//         console.log("the data has been updated to the cluster succesfully")
+//     })
+// })
 
 // })
+
+// remove all the duplicate records in
+
+client.execute("select * from sms_master.groups_per_contact", (err, results) => {
+    assert.ifError(err)
+    console.log(results.rows)
+})

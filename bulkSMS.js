@@ -278,7 +278,7 @@ module.exports = function(app) {
             prefix: req.body["Prefix"],
             body: req.body["Enter message"]
         }
-
+        console.log("sending " + numbers.length + " from the quick message screen")
         require("./sender")(numbers, messageOptions)
     })
 
@@ -288,7 +288,7 @@ module.exports = function(app) {
 
         client.execute(query, [req.session.org_id], function(err, result) {
             assert.ifError(err)
-            console.log(result)
+                // console.log(result)
             result.rows.map((row) => { row.time = moment(row.id.getDate()).calendar() })
 
             async.each(result.rows, (instance, nextRow) => {
@@ -307,6 +307,7 @@ module.exports = function(app) {
                             })
                             instance.cost = accounting.formatMoney(accounting.toFixed(Number(instance.cost), 2), "Ksh ");
                             instance.contactsReached = result.rows.length
+                            instance.view_link = "/sendResults/" + instance.id
                             next()
                         })
                     }
@@ -321,12 +322,11 @@ module.exports = function(app) {
                     name: "Bulk Message Instances"
                 })
             })
-
         })
     })
 
     app.get("/sendResults/:instance_id", auth, (req, res) => {
-
+        console.log("getting the data of an instance")
         const query = `select * from message_instance where id=?`;
         var instance = {}
 
@@ -352,11 +352,16 @@ module.exports = function(app) {
                     client.execute(query, [req.params.instance_id], { prepare: true }, function(err, result) {
                         assert.ifError(err)
                             // console.log(result)
+
                         var sum = 0
                         result.rows.map((row) => {
                             sum = Number(sum) + Number(row.cost)
+                            row.time = moment(row.id.getDate()).calendar()
+                            row.cost = accounting.formatMoney(accounting.toFixed(Number(row.cost), 2), "Ksh ");
                         })
                         instance.messages_sum = accounting.toFixed(Number(sum), 2);
+                        instance.messages = result.rows
+                            // console.log(instance.messages)
                         next()
                     })
                 },
@@ -381,10 +386,9 @@ module.exports = function(app) {
                     }, function(err, res, body) {
                         if (!err && res.statusCode == 200) {
                             console.log()
-
                             instance.balance = JSON.parse(body).balance
-                            next()
                         }
+                        next()
                     });
                 }
             ], function(err) {
