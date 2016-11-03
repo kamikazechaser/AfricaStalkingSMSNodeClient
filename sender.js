@@ -80,50 +80,50 @@ module.exports = function(numbers, messageOptions, cb) {
                 }
 
                 // send the message
-                // sendMessage([completeData.number, completeData.message], (err, results) => {
-                //     assert.ifError(err)
-                //     console.log(results)
-                //     completeData.sending_results = results.response[0]
-                //     sendresults.push(completeData)
-                // })
-                completeData.sending_results = {
-                    phonenumber: ' 254 717 121909',
-                    status: '1701',
-                    messageId: '1478092438865281889067d6be95dc',
-                    cost: '0.8',
-                    message: 'success'
-                }
-
-                sendresults.push(completeData)
+                sendMessage([completeData.number, completeData.message], (err, results) => {
+                        assert.ifError(err)
+                        console.log(results)
+                        completeData.sending_results = results.response[0]
+                        sendresults.push(completeData)
 
 
-                const message = {
-                    id: timeId.now(),
-                    message: completeData.message,
-                    instance: instance.id,
-                    cost: Number(completeData.sending_results.cost)
-                }
+                        const message = {
+                            id: timeId.now(),
+                            message: completeData.message,
+                            instance: instance.id,
+                            cost: Number(completeData.sending_results.cost)
+                        }
 
-                batch.push(cassie.insertMaker({
-                    keyspace: "sms_master",
-                    table: "quick_sent_messages",
-                    record: message
-                }))
+                        batch.push(cassie.insertMaker({
+                            keyspace: "sms_master",
+                            table: "quick_sent_messages",
+                            record: message
+                        }))
 
-                batch.push(cassie.insertMaker({
-                    keyspace: "sms_master",
-                    table: "contacts_quick_messages",
-                    record: {
-                        id: timeId.now(),
-                        contact: completeData.id,
-                        quick_message: message.id
-                    }
-                }))
+                        batch.push(cassie.insertMaker({
+                            keyspace: "sms_master",
+                            table: "contacts_quick_messages",
+                            record: {
+                                id: timeId.now(),
+                                contact: completeData.id,
+                                quick_message: message.id
+                            }
+                        }))
 
-                client.batch(batch, { prepare: true }, (err, results) => {
-                    assert.ifError(err)
-                    nextNumberCb()
-                })
+                        client.batch(batch, { prepare: true }, (err, results) => {
+                            assert.ifError(err)
+                            nextNumberCb()
+                        })
+                    })
+                    // completeData.sending_results = {
+                    //     phonenumber: ' 254 717 121909',
+                    //     status: '1701',
+                    //     messageId: '1478092438865281889067d6be95dc',
+                    //     cost: '0.8',
+                    //     message: 'success'
+                    // }
+
+
 
 
             })
