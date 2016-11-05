@@ -3,10 +3,9 @@ const assert = require("assert")
 const async = require("async")
 const cassie = require("./query_creator")
 
-const contactPoint2 = process.env.OPENSHIFT_CASSANDRA_DB_HOST + ":" + process.env.OPENSHIFT_CASSANDRA_NATIVE_TRANSPORT_PORT
 
 var connectionOptions = {
-    contactPoints: [(process.env.OPENSHIFT_CASSANDRA_DB_HOST ? contactPoint2 : "localhost")],
+    contactPoints: ["192.241.151.182", "192.241.152.171"],
     keyspace: 'system'
 };
 
