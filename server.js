@@ -2,7 +2,7 @@ const cassandra = require('cassandra-driver');
 const assert = require("assert")
 const async = require("async")
 const colors = require('colors');
-// const morgan = require("morgan");
+const morgan = require("morgan");
 const moment = require("moment")
 const session = require('express-session');
 const CassandraStore = require("cassandra-store");
@@ -11,12 +11,9 @@ var exphbs = require('express-handlebars');
 var minifyHTML = require('express-minify-html');
 var bodyParser = require('body-parser')
 
-console.log("starting school engine".blue)
-
-const contactPoint2 = process.env.OPENSHIFT_CASSANDRA_DB_HOST + ":" + process.env.OPENSHIFT_CASSANDRA_NATIVE_TRANSPORT_PORT
 
 var connectionOptions = {
-    contactPoints: [(process.env.OPENSHIFT_CASSANDRA_DB_HOST ? contactPoint2 : "localhost")],
+    contactPoints: ["192.241.151.182", "192.241.152.171"],
     keyspace: 'system'
 };
 
@@ -26,8 +23,6 @@ var client = new cassandra.Client(connectionOptions);
 // client.on('log', function(level, className, message, furtherInfo) {
 //     console.log('log event: %s -- %s', level, message);
 // });
-
-
 
 var id = cassandra.types.Uuid; //new uuid v4 .random()
 var timeId = cassandra.types.TimeUuid //new instance based on current date timeId.now
@@ -43,19 +38,7 @@ const app = express()
 
 app.use(express.static("./assets"))
 
-// You can set morgan depending on your environment
-// if (app.get('env') == 'production') {
-//     app.use(morgan('common', {
-//         skip: function(req, res) {
-//             return res.statusCode < 400
-//         },
-//         stream: __dirname + '/../morgan.log'
-//     }));
-
-
-// } else {
-//     app.use(morgan('dev'));
-// }
+app.use(morgan('dev'));
 
 // capture url encoded forms and other
 app.use(bodyParser.urlencoded({
@@ -115,7 +98,7 @@ app.engine('handlebars', exphbs({
 app.set('view engine', 'handlebars');
 
 
-const ip = process.env.OPENSHIFT_NODEJS_IP || "localhost"
+const ip = "localhost"
 const port = 8080
 
 
@@ -130,23 +113,31 @@ var auth = function(req, res, next) {
         return res.redirect("/")
 };
 
+//attempt to connect to the database
+client.connect((err) => {
+    assert.ifError(err)
+
+    console.log("Connected successfully to the cluester")
+
+    // set the client to aoo.locals
+    app.locals.db = client
+    app.locals.auth = auth
+
+    require("./bulkSMS")(app)
 
 
+    require("./views/admins/server.js")(app)
+    require("./views/messages/server.js")(app)
+    require("./views/new_message/server.js")(app)
+    require("./views/org_details/server.js")(app)
 
-require("./bulkSMS")(app)
-
-
-require("./views/admins/server.js")(app)
-require("./views/messages/server.js")(app)
-require("./views/new_message/server.js")(app)
-require("./views/org_details/server.js")(app)
-
-app.get("/logout", (req, res) => {
-    req.session.destroy(function(err) {
-        res.redirect("/")
+    app.get("/logout", (req, res) => {
+        req.session.destroy(function(err) {
+            res.redirect("/")
+        })
     })
-})
 
-app.listen(port, function() {
-    console.log('Example app listening on port ' + port + "!");
-});
+    app.listen(port, function() {
+        console.log('Example app listening on port ' + port + "!");
+    });
+})
