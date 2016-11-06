@@ -14,7 +14,7 @@ var bodyParser = require('body-parser')
 
 var connectionOptions = {
     contactPoints: ["192.241.151.182", "192.241.152.171"],
-    keyspace: 'system'
+    keyspace: 'sms_master'
 };
 
 var client = new cassandra.Client(connectionOptions);
