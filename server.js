@@ -10,6 +10,7 @@ const expressValidator = require('express-validator');
 var exphbs = require('express-handlebars');
 var minifyHTML = require('express-minify-html');
 var bodyParser = require('body-parser')
+var ip = require("ip");
 
 var contactPoints = ["192.241.151.182", "192.241.152.171"]
 
@@ -99,7 +100,6 @@ app.engine('handlebars', exphbs({
 app.set('view engine', 'handlebars');
 
 
-const ip = "localhost"
 const port = 8080
 
 
@@ -120,18 +120,22 @@ client.connect((err) => {
 
     console.log("Connected successfully to the cluster")
 
-    // set the client to aoo.locals
+    // set the client to app.locals and init bot
+    var janitor = require("./bot.js")(app)
+
     app.locals.db = client
     app.locals.auth = auth
+    app.locals.auth = auth
+    app.locals.janitor = janitor
 
     require("./bulkSMS")(app)
-
 
     require("./views/admins/server.js")(app)
     require("./views/messages/server.js")(app)
     require("./views/new_message/server.js")(app)
     require("./views/org_details/server.js")(app)
     require("./views/accounts/server.js")(app)
+
 
 
     app.get("/logout", (req, res) => {
@@ -148,5 +152,14 @@ client.connect((err) => {
 
     app.listen(port, function() {
         console.log('Example app listening on port ' + port + "!");
+        janitor.sendMessage("21649399", 'Example app listening on port ' + ip.address() + ":" + port + "!")
+    });
+
+    // catch errors
+    process.on('uncaughtException', function(err) {
+        console.error(err);
+        console.log("Node NOT Exiting...");
+        janitor.sendMessage("21649399", "uncaughtException Cought!! Node Exiting..." + new Date() + "")
+        janitor.sendMessage("21649399", (err ? err.stack : "empty error object"))
     });
 })
