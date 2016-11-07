@@ -18,6 +18,7 @@ module.exports = function(numbers, messageOptions, cb) {
     console.log("workign on " + numbers.length + " of numbers;")
     var req = messageOptions.req
     var res = messageOptions.res
+    var app = messageOptions.app
     const client = messageOptions.app.locals.db
     var auth = app.locals.auth
 
