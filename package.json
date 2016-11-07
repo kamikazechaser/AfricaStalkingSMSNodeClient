@@ -24,6 +24,8 @@
     "express-handlebars": "^3.0.0",
     "express-minify-html": "^0.6.0",
     "express-session": "^1.14.1",
+    "express-subdomain": "^1.0.5",
+    "express-subdomains": "0.0.5",
     "express-validator": "^2.20.8",
     "faker": "^3.1.0",
     "google-libphonenumber": "^2.0.2",

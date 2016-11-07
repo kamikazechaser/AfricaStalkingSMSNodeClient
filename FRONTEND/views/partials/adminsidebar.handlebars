@@ -1,0 +1,521 @@
+<aside class="main-sidebar">
+  <!-- sidebar: style can be found in sidebar.less -->
+  <section class="sidebar">
+    <!-- Sidebar user panel -->
+    <div class="user-panel">
+      <div class="pull-left image">
+        <img src="/uploads/{{session.p_pic}}" class="img-circle" alt="User Image">
+      </div>
+      <div class="pull-left info">
+        <p>{{session.user}}</p>
+        <a href="#"><i class="fa fa-circle text-success"></i> {{status}}</a>
+      </div>
+    </div>
+    <!-- search form -->
+    <form action="#" method="get" class="sidebar-form">
+      <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Search...">
+        <span class="input-group-btn">
+          <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+          </button>
+        </span>
+      </div>
+    </form>
+    <!-- /.search form -->
+    <!-- sidebar menu: : style can be found in sidebar.less -->
+    <ul class="sidebar-menu">
+      <li class="header">MAIN NAVIGATION</li>
+      {{!-- front office --}}
+      <li class="treeview">
+        <a href="#">
+          <i class="fa fa-laptop"></i> <span>Registra</span>
+          <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+          </span>
+        </a>
+        <ul class="treeview-menu">
+          <li>
+            <a href="#">
+              <i class="fa fa-circle-o"></i> Registration
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+              <li><a href="/front_office/registration"><i class="fa fa-circle-o"></i> New registration</a></li>
+              <li><a href="/front_office/registration/report"><i class="fa fa-circle-o"></i> Report</a></li>
+            </ul>
+          </li>
+          <li><a href="#"><i class="fa fa-circle-o"></i> Visitor Pass</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i> Enquiry</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i> Prospectus</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i> Appointment</a></li>
+          <li>
+            <a href="#"><i class="fa fa-circle-o"></i> Settings</a>
+            <ul class="treeview-menu">
+              <li class="active"><a href="/settings/studentregforms"><i class="fa fa-circle-o"></i> Student Reg Forms</a></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      {{!-- administration --}}
+      <li class="treeview">
+        <a href="#">
+          <i class="fa fa-user-secret"></i> <span>Administration</span>
+          <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+          </span>
+        </a>
+        <ul class="treeview-menu">
+          <li>
+            <a href="#"><i class="fa fa-circle-o"></i> Settings <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span></a>
+            <ul class="treeview-menu">
+              <li><a href="#"><i class="fa fa-circle-o"></i> Master Data</a></li>
+              <li><a href="/administration/settings/branches"><i class="fa fa-circle-o"></i> Branches</a></li>
+              <li><a href="/administration/settings/banks"><i class="fa fa-circle-o"></i> Banks Data</a></li>
+              <li><a href="/administration/settings/currencies"><i class="fa fa-circle-o"></i> Currencies</a></li>
+              <li><a href="/administration/settings/study_modes"><i class="fa fa-circle-o"></i> Study modes</a></li>
+              <li><a href="/administration/settings/academic_sessions"><i class="fa fa-circle-o"></i> Academic Session</a></li>
+              <li><a href="#"><i class="fa fa-circle-o"></i> Admission Criteria</a></li>
+              <li><a href="/administration/settings/academic_groups"><i class="fa fa-circle-o"></i> Academic Groups</a></li>
+              <li><a href="#"><i class="fa fa-circle-o"></i> Feedback Area</a></li>
+              <li><a href="#"><i class="fa fa-circle-o"></i> Organisation Details</a></li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="#"><i class="fa fa-circle-o"></i> HR Management 
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span></a>
+              <ul class="treeview-menu">
+                <li><a href="#"><i class="fa fa-circle-o"></i> Employee Upraisal</a></li>
+                <li><a href="#"><i class="fa fa-circle-o"></i> Placement</a></li>
+                <li><a href="#"><i class="fa fa-circle-o"></i> Student Resume</a></li>
+                <li><a href="#"><i class="fa fa-circle-o"></i> Update Staff ID card</a></li>
+                <li>
+                  <a href="#">
+                    <i class="fa fa-circle-o"></i> 
+                    Reports
+                    <span class="pull-right-container">
+                      <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                  </a>
+                  <ul class="treeview-menu">
+                    <li>
+                      <a href="#"><i class="fa fa-circle-o"></i> Staff Requirements</a>
+                    </li>
+                    <li>
+                      <a href="#"><i class="fa fa-circle-o"></i> SubjectWise Periods Allocation</a>
+                    </li>
+                    <li>
+                      <a href="#"><i class="fa fa-circle-o"></i> SubjectWise Teacher Capacity</a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+
+            <li>
+              <a href="#">
+                <i class="fa fa-circle-o"></i> 
+                User Acounts
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-left pull-right"></i>
+                </span>
+              </a>
+              <ul class="treeview-menu">
+                <li>
+                  <a href="#">
+                    <i class="fa fa-circle-o"></i> Manage Users
+                    <span class="pull-right-container">
+                      <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                  </a>
+                  <ul class="treeview-menu">
+                    <li><a href="/admin/acounts/users/admins"><i class="fa fa-circle-o"></i> Admins</a></li>
+                    <li><a href="/admin/acounts/users/registras"><i class="fa fa-circle-o"></i> Registra</a></li>
+                    <li><a href="/admin/acounts/users/finance"><i class="fa fa-circle-o"></i> Finance</a></li>
+                    <li><a href="/admin/acounts/users/lecturers"><i class="fa fa-circle-o"></i> Lecturer</a></li>
+                    <li><a href="/admin/acounts/users/students"><i class="fa fa-circle-o"></i> Students</a></li>
+                  </ul>
+                </li>
+                <li><a href="#"><i class="fa fa-circle-o"></i> Modules and permisions</a></li>
+              </ul>
+            </li>
+
+          </ul>
+        </li>
+
+        {{!-- Academic --}}
+        <li class="treeview">
+          <a href="#">
+            <i class="fa  fa-users"></i> <span>People</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li class="active"><a href="#"><i class="fa fa-circle-o"></i> Students</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i> Staff</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i> Vendor</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i> Attendance</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i> Organisation Chart</a></li>
+          </ul>
+        </li>
+
+         {{!-- Student --}}
+        <li class="treeview">
+          <a href="#">
+            <i class="fa  fa-users"></i> <span>Student</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li class="active"><a href="/students/list"><i class="fa fa-circle-o"></i> list</a></li>
+          </ul>
+        </li>
+
+        {{!-- infrastructure --}}
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-dashboard"></i> <span>Infrastructure</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+
+          <ul class="treeview-menu">
+            <li>
+              <a href="#"><i class="fa fa-circle-o"></i> Rooms and buildings  
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-left pull-right"></i>
+                </span></a>
+                <ul class="treeview-menu">
+                  <li><a href="#"><i class="fa fa-circle-o"></i> Buildings</a></li>
+                  <li><a href="#"><i class="fa fa-circle-o"></i> Seat Allocation</a></li>
+                </ul>
+              </a>
+            </li>
+
+            <li>
+              <a href="#"><i class="fa fa-circle-o"></i> Transport  
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-left pull-right"></i>
+                </span></a>
+                <ul class="treeview-menu">
+                  <li><a href="#"><i class="fa fa-circle-o"></i> Routes</a></li>
+                  <li><a href="#"><i class="fa fa-circle-o"></i> Assign Routes</a></li>
+                  <li>
+                    <a href="#"><i class="fa fa-circle-o"></i> Parking</a>
+                    <ul class="treeview-menu">
+                      <li><a href="#"><i class="fa fa-circle-o"></i> Routes</a></li>
+                      <li><a href="#"><i class="fa fa-circle-o"></i> Assign Routes</a></li>
+                      <li>
+                        <a href="#"><i class="fa fa-circle-o"></i> Slots</a>
+                        <a href="#"><i class="fa fa-circle-o"></i> Location</a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+                <a href="#"><i class="fa fa-circle-o"></i> Store</a>
+                <a href="#"><i class="fa fa-circle-o"></i> Assets</a>
+                <li>
+                  <a href="#"><i class="fa fa-circle-o"></i> Hostel Management  
+                    <span class="pull-right-container">
+                      <i class="fa fa-angle-left pull-right"></i>
+                    </span></a>
+                    <ul class="treeview-menu">
+                      <li>
+                        <a href="#"><i class="fa fa-circle-o"></i> Hostel Create</a>
+                        <a href="#"><i class="fa fa-circle-o"></i> Hostel Assign</a>
+                      </li>
+                    </ul>
+                  </li>
+                </li>
+              </a>
+            </li>
+
+            {{!-- Finance --}}
+            <li class="treeview">
+              <a href="#">
+                <i class="fa fa-money"></i> <span>Finance</span>
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-left pull-right"></i>
+                </span>
+              </a>
+              <ul class="treeview-menu">
+                <li>
+                  <a href="#"><i class="fa fa-circle-o"></i> Fees 
+                    <span class="pull-right-container">
+                      <i class="fa fa-angle-left pull-right"></i>
+                    </span></a>
+                    <ul class="treeview-menu">
+                    <li><a href="/finance/student_charges"><i class="fa fa-circle-o"></i> Student Charges</a></li>
+                      <li><a href="/finance/fees/group-setup"><i class="fa fa-circle-o"></i> Class Wise Setup</a></li>
+                      <li><a href="/finance/fees/group-invoice"><i class="fa fa-circle-o"></i> Generate Invoice</a></li>
+                      <li><a href="/finance/fees/receive_payment"><i class="fa fa-circle-o"></i> Receive Payment</a></li>
+                      <li><a href="#"><i class="fa fa-circle-o"></i> Fee Discount</a></li>
+                      <li>
+                        <a href="#"><i class="fa fa-circle-o"></i> Reports  
+                          <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                          </span></a>
+                          <ul class="treeview-menu">
+                            <li>
+                              <a href="#"><i class="fa fa-circle-o"></i> Fee Collection</a>
+                              <a href="#"><i class="fa fa-circle-o"></i> Defaulter List</a>
+                              <a href="#"><i class="fa fa-circle-o"></i> Fee Generated and collected</a>
+                              <a href="#"><i class="fa fa-circle-o"></i> Blank report</a>
+                              <a href="#"><i class="fa fa-circle-o"></i> Cheque Return</a>
+                              <a href="#"><i class="fa fa-circle-o"></i> Cheque return report</a>
+                              <a href="#"><i class="fa fa-circle-o"></i> Supplementary Report</a>
+                              <a href="#"><i class="fa fa-circle-o"></i> Fee certificate</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> Finance Payment</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> Payment</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> Cheque Payment</a></li>
+                      </ul>
+                    </li>
+                    <li>
+                      <a href="#"><i class="fa fa-circle-o"></i> Payrole  
+                        <span class="pull-right-container">
+                          <i class="fa fa-angle-left pull-right"></i>
+                        </span></a>
+                        <ul class="treeview-menu">
+                          <li>
+                            <a href="#"><i class="fa fa-circle-o"></i> Employee Salary  
+                              <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                              </span></a>
+                              <ul class="treeview-menu">
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Process Salary</a></li>
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Salary Definitions</a></li>
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Misc Details</a></li>
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Salary Definitions</a></li>
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Salary Pay scale</a></li>
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Staff Attendance</a></li>
+                              </ul>
+                            </li>
+                            <li>
+                              <a href="#"><i class="fa fa-circle-o"></i> Settings  
+                                <span class="pull-right-container">
+                                  <i class="fa fa-angle-left pull-right"></i>
+                                </span></a>
+                                <ul class="treeview-menu">
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Salary Days</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Tax slabs</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Salary Head Definition</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Salary Head Investment Definition</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Salary Grade</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Financial Year</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Payment term</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Designation and Leave Setup</a></li>
+                                </ul>
+                              </li>
+                              <li>
+                                <a href="#"><i class="fa fa-circle-o"></i> Reports  
+                                  <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                  </span></a>
+                                  <ul class="treeview-menu">
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Monthly Detail</a></li>
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Salary Slip</a></li>
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Employee Head</a></li>
+                                  </ul>
+                                </li>
+
+                              </ul>
+                            </li>
+                            <li>
+                              <a href="#"><i class="fa fa-circle-o"></i> Accounting  
+                                <span class="pull-right-container">
+                                  <i class="fa fa-angle-left pull-right"></i>
+                                </span></a>
+                                <ul class="treeview-menu">
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Payment Receipt</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Finance Samary</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Day /Cash book</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Account Ledger</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Trial Balance</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Account Transfer</a></li>
+                                  <li><a href="#"><i class="fa fa-circle-o"></i> Payment Cancelation</a></li>
+                                </ul>
+                              </li>
+                            </ul>
+                          </li>
+
+
+
+
+
+                          {{!-- Tools --}}
+                          <li class="treeview">
+                            <a href="#">
+                              <i class="fa fa-wrench"></i> <span>Tools</span>
+                              <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                              </span>
+                            </a>
+                            <ul class="treeview-menu">
+                              <li class="active"><a href="#"><i class="fa fa-circle-o"></i> Circulars </a></li>
+                              <li>
+                                <a href="#"><i class="fa fa-circle-o"></i> Utilities  
+                                  <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                  </span></a>
+                                  <ul class="treeview-menu">
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Event Plan</a></li>
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> PTM</a></li>
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Exit Request</a></li>
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> SlC</a></li>
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Send Alerts</a></li>
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Import Export Utility</a></li>
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> New Student Activate</a></li>
+                                  </ul>
+                                </li>
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Live Update</a></li>
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Class Promotion</a></li>
+
+                              </ul>
+                            </li>
+
+                            {{!-- Reports --}}
+                            <li class="treeview">
+                              <a href="#">
+                                <i class="fa fa-file-text"></i> <span>Reports</span>
+                                <span class="pull-right-container">
+                                  <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                              </a>
+                              <ul class="treeview-menu">
+                                <li class="active"><a href="#"><i class="fa fa-circle-o"></i> Staff Utilization</a></li>
+                                <li>
+                                  <a href="#"><i class="fa fa-circle-o"></i> People  
+                                    <span class="pull-right-container">
+                                      <i class="fa fa-angle-left pull-right"></i>
+                                    </span></a>
+                                    <ul class="treeview-menu">
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Student Admision</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Visitors List</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Attendance History</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Placement Report</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> New Staff</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Released Staff</a></li>
+                                    </ul>
+                                  </a>
+                                </li>
+                                <li>
+                                  <a href="#"><i class="fa fa-circle-o"></i> Academics  
+                                    <span class="pull-right-container">
+                                      <i class="fa fa-angle-left pull-right"></i>
+                                    </span></a>
+                                    <ul class="treeview-menu">
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Curriculumn Progress</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Curriculumn Planned Versus Completed</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Student Count</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Student Strength</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Student Perfomance</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Student Ranks</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> School Reports</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Character Certificate</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Provisional Certificate</a></li>
+                                    </ul>
+                                  </a>
+                                </li>
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Live Update</a></li>
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Class Promotion</a></li>
+
+                              </ul>
+                            </li>
+
+                            {{!-- Academic --}}
+                            <li class="treeview">
+                              <a href="#">
+                                <i class="fa fa-graduation-cap"></i> <span>Academic</span>
+                                <span class="pull-right-container">
+                                  <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                              </a>
+                              <ul class="treeview-menu">
+                                <li>
+                                  <a href="#"><i class="fa fa-circle-o"></i> Books and subjects  
+                                    <span class="pull-right-container">
+                                      <i class="fa fa-angle-left pull-right"></i>
+                                    </span></a>
+                                    <ul class="treeview-menu">
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Books</a></li>
+                                      <li><a href="#"><i class="fa fa-circle-o"></i> Subjects</a></li>
+                                    </ul>
+                                  </li>
+
+                                  <li>
+                                    <a href="#"><i class="fa fa-circle-o"></i> Standards  
+                                      <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                      </span></a>
+                                      <ul class="treeview-menu">
+                                        <li><a href="#"><i class="fa fa-circle-o"></i> List</a></li>
+                                        <li><a href="#"><i class="fa fa-circle-o"></i> Homeworks</a></li>
+                                        <li><a href="#"><i class="fa fa-circle-o"></i> Assignments</a></li>
+                                        <li><a href="#"><i class="fa fa-circle-o"></i> Curriculumn</a></li>
+                                        <li><a href="#"><i class="fa fa-circle-o"></i> Homeworks</a></li>
+                                        <li><a href="#"><i class="fa fa-circle-o"></i> Progress Reports</a></li>
+                                      </ul>
+                                    </li>
+
+                                    <li>
+                                      <a href="#"><i class="fa fa-circle-o"></i> Timetable  
+                                        <span class="pull-right-container">
+                                          <i class="fa fa-angle-left pull-right"></i>
+                                        </span></a>
+                                        <ul class="treeview-menu">
+                                          <li><a href="#"><i class="fa fa-circle-o"></i> Manage</a></li>
+                                          <li><a href="#"><i class="fa fa-circle-o"></i> Adjust</a></li>
+                                          <li><a href="#"><i class="fa fa-circle-o"></i> Classwise</a></li>
+                                          <li><a href="#"><i class="fa fa-circle-o"></i> LecturerWise</a></li>
+                                          <li><a href="#"><i class="fa fa-circle-o"></i> Staff Replacement</a></li>
+                                        </ul>
+                                      </li>
+
+                                      <li>
+                                        <a href="#"><i class="fa fa-circle-o"></i> Examinations  
+                                          <span class="pull-right-container">
+                                            <i class="fa fa-angle-left pull-right"></i>
+                                          </span></a>
+                                          <ul class="treeview-menu">
+                                            <li><a href="#"><i class="fa fa-circle-o"></i> Exam</a></li>
+                                            <li><a href="#"><i class="fa fa-circle-o"></i> Report card</a></li>
+                                            <li><a href="#"><i class="fa fa-circle-o"></i> CBSE</a></li>
+                                            <li><a href="#"><i class="fa fa-circle-o"></i> Question Bank</a></li>
+                                            <li><a href="#"><i class="fa fa-circle-o"></i> Datasheet</a></li>
+                                            <li><a href="#"><i class="fa fa-circle-o"></i> Exam Ticket</a></li>
+                                            <li>
+                                              <a href="#"><i class="fa fa-circle-o"></i> Pre Primary  
+                                                <span class="pull-right-container">
+                                                  <i class="fa fa-angle-left pull-right"></i>
+                                                </span></a>
+                                                <ul class="treeview-menu">
+                                                  <li><a href="#"><i class="fa fa-circle-o"></i> Report card setup</a></li>
+                                                  <li><a href="#"><i class="fa fa-circle-o"></i> Marking</a></li>
+                                                  <li><a href="#"><i class="fa fa-circle-o"></i> Report card print</a></li>
+                                                  <li><a href="#"><i class="fa fa-circle-o"></i> ICSE Report Card</a></li>
+                                                </ul>
+                                              </li>
+                                              <li><a href="#"><i class="fa fa-circle-o"></i> Library</a></li>
+
+                                            </ul>
+                                          </li>
+                                        </li>
+
+
+                                      </ul>
+                                    </section>
+                                    <!-- /.sidebar -->
+                                  </aside>

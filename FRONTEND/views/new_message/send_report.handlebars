@@ -1,0 +1,55 @@
+{{!-- <h1>Sending Results</h1> --}}
+
+<p>Sent by: {{instance.details.admin}}</p>
+<p>Messages sent are: {{instance.messages_number}}</p>
+<p>Total cost: {{instance.messages_sum}}</p>
+<p>Balance: {{instance.balance}}</p>
+
+<p>{{session.message.title}}</p>
+<p>{{session.message.message}}</p>
+<p>{{results.Message}}</p>
+
+
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="box">
+			<div class="box-header">
+				<h2 class="box-title">{{name}}</h2>
+				{{>export}}
+			</div>
+			<!-- /.box-header -->
+			<div class="box-body">
+				<div class="col-lg-12">
+					<table class="table datatable table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>Time</th>
+								<th>Cost</th>
+								<th>Message</th>
+							</tr>
+						</thead>
+						<tbody>
+							
+								{{#each instance.messages as |message|}}
+									<tr>
+										<td>{{message.time}} </td>
+										<td>{{message.cost}}</td>
+										<td>{{message.message}}</td>
+									</tr>
+								{{/each}}
+							
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+</div>
+
+
+
+

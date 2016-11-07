@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+{{>head}}
+
+
+<body class="hold-transition skin-blue sidebar-mini fixed">
+
+{{#if session.admin}}
+  {{>adminnavbar}}
+  {{>adminsidebar}}
+{{/if}}
+
+{{#if session.registra}}
+  {{>registranavbar}}
+  {{>registrasidebar}}
+{{/if}}
+
+{{#if session.student}}
+  {{>studentnavbar}}
+  {{>studentsidebar}}
+{{/if}}
+
+
+  <div class="content-wrapper">
+   {{>content-header}}
+   <section class="content">
+     {{{body}}}
+   </section>
+
+ </div>
+
+ {{>footer}}
+ {{>customizer}}
+ <!-- ./wrapper -->
+
+{{>scripts}}
+</body>
+</html>

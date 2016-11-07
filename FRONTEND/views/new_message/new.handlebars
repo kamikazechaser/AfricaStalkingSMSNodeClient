@@ -1,0 +1,26 @@
+<div class="row">
+	<div class="col-lg-3">
+		<div class="box">
+			<div class="box-header">
+				<h2 class="box-title">Saved Messages</h2>
+				{{>export}}
+			</div>
+			<!-- /.box-header -->
+			<div class="box-body">
+				{{#each savedMessages as |message|}}
+				<div class="post clearfix">
+
+					<strong><i class="fa fa-book margin-r-5"></i> {{message.title}}</strong>
+					<br>
+					{{message.content}}
+
+					<a href="{{message.use_link}}" class="btn btn-info pull-right">Use Directly</a>
+				</div>
+				{{/each}}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-9">
+		{{>form}}
+	</div>
+</div>

@@ -1,0 +1,49 @@
+<div class="row">
+	<div class="col-lg-3">
+		<div class="box">
+			<div class="box-header with-boarder">
+			<h3 class="text-center">Your message</h3>
+			</div>
+			<div class="box-body text-center">
+			{{session.message.title}} <br>
+				{{session.message.prefix}} ${firstname}  {{session.message.message}}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-9">
+		<form action="/sendToMultipleGroups" method="POST">
+			<div class="box">
+				<div class="box-header">
+					<h4>Select group to send to</h4>
+				</div>
+				<div class="box-body">
+					<table class="table datatable table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Actions</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each groups as |group|}}
+								<tr>
+									<td>{{group.name}}</td>
+									<td >
+										<div class="btn-group pull-right">
+											<a href="{{specify_members_link}}" class="btn btn-success btn-xs">Select Individual users</a>
+											<a href="{{send_link}}" class="btn btn-info btn-xs">Send here</a>
+										</div>
+									</td>
+									<td>{{group.memberNumber}} contacts</td>
+								</tr>
+							{{/each}}
+						</tbody>
+					</table>
+					
+				</div>
+			</div>
+		</form>
+		
+	</div>
+</div>
