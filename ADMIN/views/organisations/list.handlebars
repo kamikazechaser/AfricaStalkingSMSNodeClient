@@ -11,33 +11,26 @@
 					<table class="table datatable table-bordered table-hover">
 						<thead>
 							<tr>
-								<th>Contact name</th>
-								<th>Contact number</th>
-								<th></th>
+								<th>Name</th>
+								<th>Location</th>
+								<th>Details</th>
 								<th></th>
 							</tr>
 						</thead>
 						<tbody>
-							{{#each admins as |contact|}}
+							{{#each organisations as |org|}}
 							<tr>
-								<td>{{contact.user_name}}</td>
-								<td>{{contact.phone_number}}</td>
+								<td>{{org.name}}</td>
+								<td>{{org.locations}}</td>
+								<td>{{org.details}}</td>
 								<td>
 									<div class="btn-group">
-										<a href="{{view_link}}" class="btn btn-xs btn-info">View Profile</a>
-									</div>
-								</td>
-								<td>
-									<div class="btn-group">
-										<a href="{{delete_link}}" class="btn btn-xs btn-danger">Delete</a>
+										<a href="{{view_link}}" class="btn btn-xs btn-info">View info</a>
 									</div>
 								</td>
 							</tr>
 							{{/each}}
-
-
 						</tbody>
-
 					</table>
 				</div>
 			</div>

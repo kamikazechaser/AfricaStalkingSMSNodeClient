@@ -156,4 +156,36 @@ module.exports = function(app) {
         })
 
     })
+
+    app.get("/organisations", auth, (req, res) => {
+        console.log(req.session)
+
+        const query = `select * from sms_master.organisations`;
+
+        client.execute(query, function(err, result) {
+            assert.ifError(err);
+            console.log(result.rows)
+
+            var rows = []
+
+            result.rows.map((row) => {
+                row.details = moment(row.id.getDate()).calendar()
+                row.view_link = ("/admins/" + row.user_name)
+                row.edit_link = ("/contacts/edit/" + row.username)
+                row.delete_link = ("/admins/delete/" + row.user_name)
+            })
+
+            var renderData = {
+                layout: "bulkSMS",
+                session: req.session,
+                status: "Online",
+                page: "Organisations",
+                organisations: result.rows
+            }
+
+            res.render('organisations/list', renderData);
+
+        });
+
+    })
 }
