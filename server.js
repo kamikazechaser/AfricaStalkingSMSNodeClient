@@ -11,11 +11,7 @@ var exphbs = require('express-handlebars');
 var minifyHTML = require('express-minify-html');
 var bodyParser = require('body-parser')
 
-if (process.env.NODE_ENV) {
-    var contactPoints = ["192.241.151.182", "192.241.152.171"]
-} else {
-    var contactPoints = ["localhost"]
-}
+var contactPoints = ["192.241.151.182", "192.241.152.171"]
 
 var connectionOptions = {
     contactPoints: contactPoints,
