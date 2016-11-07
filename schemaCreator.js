@@ -212,6 +212,17 @@ var creator = function() {
             primary_keys: ["id"]
         }),
 
+        cassie.tableMaker({
+            keyspace: "sms_master",
+            table: "payments",
+            record: {
+                organisation: "timeuuid",
+                id: "timeuuid",
+                ammount: "float",
+                account: "text"
+            },
+            primary_keys: ["organisation"]
+        })
 
     ]
 

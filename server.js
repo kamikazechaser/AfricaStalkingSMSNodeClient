@@ -11,9 +11,14 @@ var exphbs = require('express-handlebars');
 var minifyHTML = require('express-minify-html');
 var bodyParser = require('body-parser')
 
+if (process.env.NODE_ENV) {
+    var contactPoints = ["192.241.151.182", "192.241.152.171"]
+} else {
+    var contactPoints = ["localhost"]
+}
 
 var connectionOptions = {
-    contactPoints: ["192.241.151.182", "192.241.152.171"],
+    contactPoints: contactPoints,
     keyspace: 'sms_master'
 };
 
@@ -110,14 +115,14 @@ var auth = function(req, res, next) {
     if (req.session.user_id && req.session.org_id)
         return next();
     else
-        return res.redirect("/")
+        next()
 };
 
 //attempt to connect to the database
 client.connect((err) => {
     assert.ifError(err)
 
-    console.log("Connected successfully to the cluester")
+    console.log("Connected successfully to the cluster")
 
     // set the client to aoo.locals
     app.locals.db = client
@@ -130,12 +135,20 @@ client.connect((err) => {
     require("./views/messages/server.js")(app)
     require("./views/new_message/server.js")(app)
     require("./views/org_details/server.js")(app)
+    require("./views/accounts/server.js")(app)
+
 
     app.get("/logout", (req, res) => {
-        req.session.destroy(function(err) {
-            res.redirect("/")
+            req.session.destroy(function(err) {
+                res.redirect("/")
+            })
         })
-    })
+        // not found page
+    app.get('*', function(req, res) {
+        res.render('404', {
+            layout: false
+        });
+    });
 
     app.listen(port, function() {
         console.log('Example app listening on port ' + port + "!");

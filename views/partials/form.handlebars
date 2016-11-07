@@ -18,7 +18,7 @@
 					<label for="{{field.name}}">{{field.name}}</label>
 					<select class="form-control select2" name="{{field.name}}" {{multiple}}>
 						{{#each field.selects as |select|}}
-							<option value={{select.value}} {{select.selected}}> {{select.text}}</option>
+							<option  value={{select.value}} {{select.selected}}> {{select.text}}</option>
 						{{/each}}
 					</select>
 					</div>
@@ -32,7 +32,7 @@
 						{{else}}
 							<div class="col-xs-12">
 								<label for="{{field.name}}">{{field.name}}</label>
-								<input id="{{field.name}}" name="{{field.name}}" value="{{field.value}}" type="{{field.type}}" class="form-control {{field.add_class}}" placeholder="{{field.placeholder}}" {{field.attrs}}>
+								<input  id="{{field.name}}" name="{{field.name}}" value="{{field.value}}" type="{{field.type}}" class="form-control {{field.add_class}}" placeholder="{{field.placeholder}}" {{field.attrs}}>
 							</div>
 						{{/if}}
 					

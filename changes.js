@@ -19,39 +19,38 @@ var timeId = cassandra.types.TimeUuid //new instance based on current date timeI
 const contactPoint2 = process.env.OPENSHIFT_CASSANDRA_DB_HOST + ":" + process.env.OPENSHIFT_CASSANDRA_NATIVE_TRANSPORT_PORT
 
 var connectionOptions = {
-    contactPoints: [(process.env.OPENSHIFT_CASSANDRA_DB_HOST ? contactPoint2 : "localhost")],
+    contactPoints: ["192.241.151.182", "192.241.152.171"],
     keyspace: 'sms_master'
 };
 
 var client = new cassandra.Client(connectionOptions);
 
 
-// const masterLocal = "995917d0-9ac0-11e6-84b9-26c25ec4d711"
-// const masterProd = "d9188870-9ac4-11e6-ba06-e72132bc4668"
-// get all the clients
+const masterProd = "d9188870-9ac4-11e6-ba06-e72132bc4668"
+    // get all the clients
 
 // add them all to the master group
 
 // move everyone to master
 
-// client.execute("select * from sms_master.contacts", (err, results) => {
-//     assert.ifError(err)
-//     results.rows.map((row) => {
-//         var assign = [{
-//             query: `INSERT INTO sms_master.groups_per_contact (id,contact,contact_name, group) VALUES (?,?, ?, ?);`,
-//             params: [timeId.now(), row.id, row.user_name, masterLocal]
-//         }, {
-//             query: `INSERT INTO sms_masterf.groups_per_contact (id,contact,contact_name, group) VALUES (?,?, ?, ?);`,
-//             params: [timeId.now(), row.id, row.user_name, masterProd]
-//         }]
+client.execute("select * from sms_master.contacts", (err, results) => {
+    assert.ifError(err)
+    results.rows.map((row) => {
+        var assign = [{
+            query: `INSERT INTO sms_master.groups_per_contact (id,contact,contact_name, group) VALUES (?,?, ?, ?);`,
+            params: [timeId.now(), row.id, row.user_name, masterLocal]
+        }, {
+            query: `INSERT INTO sms_masterf.groups_per_contact (id,contact,contact_name, group) VALUES (?,?, ?, ?);`,
+            params: [timeId.now(), row.id, row.user_name, masterProd]
+        }]
 
-//         client.batch(assign, function(err, result) {
-//             assert.ifError(err);
-//             // console.log(result.rows)
-//             console.log("sorted")
-//         });
-//     })
-// })
+        client.batch(assign, function(err, result) {
+            assert.ifError(err);
+            // console.log(result.rows)
+            console.log("sorted")
+        });
+    })
+})
 
 // var organisation = "37dfc5c0-9abc-11e6-a62e-0a6f3f26f5ce"
 // var batch = []
@@ -88,7 +87,78 @@ var client = new cassandra.Client(connectionOptions);
 
 // remove all the duplicate records in
 
-client.execute("select * from sms_master.groups_per_contact", (err, results) => {
-    assert.ifError(err)
-    console.log(results.rows)
-})
+// client.execute("select * from sms_master.groups_per_contact", (err, results) => {
+//     assert.ifError(err)
+//     console.log(results.rows)
+// })
+
+// client.execute("select * from contacts;", (err, results) => {
+//     assert.ifError(err)
+//         // console.log(results.rows)
+//     async.each(results.rows, (row, next) => {
+//         // console.log(row.phone_number)
+
+//         client.execute("select * from contacts where phone_number = ? ALLOW FILTERING;", [row.phone_number], (err, results) => {
+//             assert.ifError(err)
+//             if (results.rows.length > 1) {
+//                 console.log(row.phone_number + " has " + results.rows.length + " duplicates ")
+//                 async.series([
+//                     function(nextDuplicate) {
+//                         // map through the duplicates and delete them all
+//                         async.map(results.rows, (err, next) => {
+//                             client.execute("delete from sms_master.groups_per_contact where id=?", [row.id], function(err, result) {
+//                                 assert.ifError(err)
+//                                 console.log("deleted the record" + row.id + " for " + row.phone_number)
+//                             })
+//                         }, nextDuplicate)
+//                     },
+//                     function(nextFUnction) {
+//                         var assign = [{
+//                             query: `INSERT INTO sms_master.groups_per_contact (id,contact,contact_name, group) VALUES (?,?, ?, ?);`,
+//                             params: [results.rows[0].id, results.rows[0].contact, results.rows[0].contact_name, results.rows[0].group]
+//                         }]
+
+//                         client.batch(assign, function(err, result) {
+//                             assert.ifError(err);
+//                             console.log(result.rows)
+//                             nextFUnction
+//                         });
+//                     }
+//                 ], next)
+//             }
+//             next()
+//         })
+//     })
+// })
+
+// client.execute("select * from contacts where phone_number = ? ALLOW FILTERING;", [number], (err, results) => {
+//     assert.ifError(err)
+//         // store the thing to be batched
+//     var batch = []
+
+//     // remove duplicates, best to move the data to a new table with composite keys
+//     if (results.rows.length > 1) {
+//         console.log(number + " has " + results.rows.length + " duplicates ")
+//             // delete and insert again to get only one contact in that table
+
+//         async.each(results.rows, (row, next) => {
+//             client.execute("delete from sms_master.groups_per_contact where contact=?", [row.id], function(err, result) {
+//                 assert.ifError(err)
+//                 console.log("deleted the record" + row.id + " for " + number)
+//                 next()
+//             })
+//         }, function(argument) {
+
+//             // insert it again using the first Id in memory
+//             var assign = [{
+//                 query: `INSERT INTO sms_master.groups_per_contact (id,contact,contact_name, group) VALUES (?,?, ?, ?);`,
+//                 params: [results.rows[0].id, results.rows[0].contact, results.rows[0].contact_name, results.rows[0].group]
+//             }]
+
+//             client.batch(assign, function(err, result) {
+//                 assert.ifError(err);
+//                 console.log(result.rows)
+//             });
+//         })
+//     }
+// })

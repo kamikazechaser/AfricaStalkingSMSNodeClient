@@ -5,11 +5,8 @@
 			<h3 class="text-center">Your message</h3>
 			</div>
 			<div class="box-body text-center">
-				{{session.message.prefix}}
-				<hr>
-				{{session.message.title}}
-				<hr>
-				{{session.message.message}}
+			{{session.message.title}} <br>
+				{{session.message.prefix}} ${firstname}  {{session.message.message}}
 			</div>
 		</div>
 	</div>
@@ -24,22 +21,21 @@
 						<thead>
 							<tr>
 								<th>Name</th>
-								<th>Contact Number</th>
-								<th>actions</th>
+								<th>Actions</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
 							{{#each groups as |group|}}
 								<tr>
 									<td>{{group.name}}</td>
-									<td>{{group.memberNumber}}</td>
-									
 									<td >
 										<div class="btn-group pull-right">
-											<a href="{{specify_members_link}}" class="btn btn-info">Select Individual users</a>
-											<a href="{{send_link}}" class="btn btn-info">Send here</a>
+											<a href="{{specify_members_link}}" class="btn btn-success btn-xs">Select Individual users</a>
+											<a href="{{send_link}}" class="btn btn-info btn-xs">Send here</a>
 										</div>
 									</td>
+									<td>{{group.memberNumber}} contacts</td>
 								</tr>
 							{{/each}}
 						</tbody>

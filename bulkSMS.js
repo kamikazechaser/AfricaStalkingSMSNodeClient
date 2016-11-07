@@ -246,6 +246,7 @@ module.exports = function(app) {
         var messageOptions = {
             req: req,
             res: res,
+            app: app,
             subject: req.body["Subject"],
             prefix: req.body["Prefix"],
             body: req.body["Enter message"]

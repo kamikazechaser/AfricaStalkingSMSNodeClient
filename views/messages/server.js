@@ -22,8 +22,8 @@ module.exports = function(app) {
 
             result.rows.map((row) => {
                 row.view_link = ("/messages/" + row.id)
-                row.edit_link = ("/messages/edit/" + row.id),
-                    row.delete_link = ("/messages/delete/" + row.id)
+                row.edit_link = ("/messages/edit/" + row.id)
+                row.delete_link = ("/messages/delete/" + row.id)
             })
 
             console.log(req.session.user)

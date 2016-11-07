@@ -9,16 +9,6 @@ var request = require("request")
 const cassie = require("./query_creator")
 const accounting = require("accounting")
 
-
-const contactPoint2 = process.env.OPENSHIFT_CASSANDRA_DB_HOST + ":" + process.env.OPENSHIFT_CASSANDRA_NATIVE_TRANSPORT_PORT
-
-var connectionOptions = {
-    contactPoints: [(process.env.OPENSHIFT_CASSANDRA_DB_HOST ? contactPoint2 : "localhost")],
-    keyspace: 'sms_master'
-};
-
-var client = new cassandra.Client(connectionOptions);
-
 var id = cassandra.types.Uuid; //new uuid v4 .random()
 var timeId = cassandra.types.TimeUuid //new instance based on current date timeId.now
 
@@ -28,6 +18,9 @@ module.exports = function(numbers, messageOptions, cb) {
     console.log("workign on " + numbers.length + " of numbers;")
     var req = messageOptions.req
     var res = messageOptions.res
+    const client = messageOptions.app.locals.db
+    var auth = app.locals.auth
+
     var resolvedNumbers = []
     var sendresults = []
 
@@ -44,7 +37,7 @@ module.exports = function(numbers, messageOptions, cb) {
                     // store the thing to be batched
                 var batch = []
 
-                // remove duplicates, best to move the data to a new table with composite keys
+                // // remove duplicates, best to move the data to a new table with composite keys
                 // if (results.rows.length > 1) {
                 //     console.log(number + " has " + results.rows.length + " duplicates ")
                 //         // delete and insert again to get only one contact in that table
@@ -123,8 +116,36 @@ module.exports = function(numbers, messageOptions, cb) {
                     //     message: 'success'
                     // }
 
+                // sendresults.push(completeData)
 
 
+                // const message = {
+                //     id: timeId.now(),
+                //     message: completeData.message,
+                //     instance: instance.id,
+                //     cost: Number(completeData.sending_results.cost)
+                // }
+
+                // batch.push(cassie.insertMaker({
+                //     keyspace: "sms_master",
+                //     table: "quick_sent_messages",
+                //     record: message
+                // }))
+
+                // batch.push(cassie.insertMaker({
+                //     keyspace: "sms_master",
+                //     table: "contacts_quick_messages",
+                //     record: {
+                //         id: timeId.now(),
+                //         contact: completeData.id,
+                //         quick_message: message.id
+                //     }
+                // }))
+
+                // client.batch(batch, { prepare: true }, (err, results) => {
+                //     assert.ifError(err)
+                //     nextNumberCb()
+                // })
 
             })
         },
