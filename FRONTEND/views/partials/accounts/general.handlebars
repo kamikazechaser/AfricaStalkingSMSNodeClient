@@ -1,31 +1,50 @@
-<table class="table datatable table-bordered table-hover">
-						<thead>
-							<tr>
-								<th>Contact name</th>
-								<th>Contact number</th>
-								<th></th>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody>
-							{{#each admins as |contact|}}
-							<tr>
-								<td>{{contact.user_name}}</td>
-								<td>{{contact.phone_number}}</td>
-								<td>
-									<div class="btn-group">
-										<a href="{{view_link}}" class="btn btn-xs btn-info">View Profile</a>
-									</div>
-								</td>
-								<td>
-									<div class="btn-group">
-										<a href="{{delete_link}}" class="btn btn-xs btn-danger">Delete</a>
-									</div>
-								</td>
-							</tr>
-							{{/each}}
+<div class="row">
+       
+        <div class="col-md-4 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-red"><i class="fa fa-envelope"></i></span>
+
+            <div class="info-box-content">
+              <span class="info-box-text">Total Messages Sent</span>
+              <span class="info-box-number">{{total_contacts_reached}}</span>
+            </div>
+            <!-- /.info-box-content -->
+          </div>
+          <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+        <div class="col-md-4 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-red"><i class="fa fa-credit-card-alt"></i></span>
+
+            <div class="info-box-content">
+              <span class="info-box-text">Your Debit Account</span>
+              <span class="info-box-number">{{payments_sum}}</span>
+            </div>
+            <!-- /.info-box-content -->
+          </div>
+          <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+        <!-- fix for small devices only -->
+        <div class="clearfix visible-sm-block"></div>
+
+        <div class="col-md-4 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-green"><i class="ion ion-ios-cart-outline"></i></span>
+
+            <div class="info-box-content">
+              <span class="info-box-text">Your Customer Credit</span>
+              <span class="info-box-number">{{bills_sum}}</span>
+
+            </div>
+            <!-- /.info-box-content -->
+          </div>
+          <!-- /.info-box -->
+        </div>
 
 
-						</tbody>
-
-					</table>
+        <!-- /.col -->
+      </div>

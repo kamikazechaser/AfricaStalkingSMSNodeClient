@@ -198,6 +198,10 @@ module.exports = function(app) {
 
         async.parallel([
             function rates(next) {
+                renderData.newrate = "/organisations/" + req.params.org_id + "/rates/new"
+                renderData.newpayment = "/organisations/" + req.params.org_id + "/payments/new"
+                renderData.newcharge = "/organisations/" + req.params.org_id + "/charges/new"
+
                 client.execute("select * from organisation_rates where organisation =?;", [req.params.org_id], (err, result) => {
                     assert.ifError(err)
                     renderData.rates = result.rows
@@ -206,10 +210,9 @@ module.exports = function(app) {
                         row.activate = "/organisations/" + req.params.org_id + "/rates/" + row.rate_id + "/activate"
                         if (row.active === true) {
                             renderData.rate = row.percentage
-                            renderData.newrate = "/organisations/" + req.params.org_id + "/rates/new"
-                            renderData.newpayment = "/organisations/" + req.params.org_id + "/payments/new"
-                            renderData.newcharge = "/organisations/" + req.params.org_id + "/charges/new"
+
                         }
+
                     })
                     next()
                 })

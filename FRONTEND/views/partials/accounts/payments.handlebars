@@ -1,27 +1,21 @@
 <table class="table datatable table-bordered table-hover">
 						<thead>
 							<tr>
-								<th>Contact name</th>
-								<th>Contact number</th>
-								<th></th>
-								<th></th>
+								<th>Date</th>
+								<th>Ammount</th>
+								<th>Channel</th>
+								<th>Contact</th>
+								<th>Reference Id</th>
 							</tr>
 						</thead>
 						<tbody>
-							{{#each admins as |contact|}}
+							{{#each payments as |payment|}}
 							<tr>
-								<td>{{contact.user_name}}</td>
-								<td>{{contact.phone_number}}</td>
-								<td>
-									<div class="btn-group">
-										<a href="{{view_link}}" class="btn btn-xs btn-info">View Profile</a>
-									</div>
-								</td>
-								<td>
-									<div class="btn-group">
-										<a href="{{delete_link}}" class="btn btn-xs btn-danger">Delete</a>
-									</div>
-								</td>
+								<td>{{payment.date}}</td>
+								<td>{{payment.ammount}}</td>
+								<td>{{payment.channel}}</td>
+								<td>{{payment.contact}}</td>
+								<td>{{payment.ref_id}}</td>
 							</tr>
 							{{/each}}
 

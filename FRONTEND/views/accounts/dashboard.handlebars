@@ -3,9 +3,9 @@
           <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
               <li class="active"><a href="#tab_1" data-toggle="tab">General</a></li>
-              <li><a href="#tab_2" data-toggle="tab">Payments</a></li>
-              <li><a href="#tab_3" data-toggle="tab">Charges</a></li>
-              
+              <li><a href="#tab_2" data-toggle="tab">Debits</a></li>
+              <li><a href="#tab_3" data-toggle="tab">Credits</a></li>
+            
               {{!-- <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li> --}}
             </ul>
             <div class="tab-content">
@@ -14,11 +14,11 @@
               </div>
               <!-- /.tab-pane -->
               <div class="tab-pane" id="tab_2">
-                {{>accounts/charges}}
+                {{>accounts/payments}}
               </div>
               <!-- /.tab-pane -->
               <div class="tab-pane" id="tab_3">
-                {{>accounts/payments}}
+                {{>accounts/charges}}
               </div>
               <!-- /.tab-pane -->
             </div>
