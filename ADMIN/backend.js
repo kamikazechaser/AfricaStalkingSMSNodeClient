@@ -105,10 +105,10 @@ const port = 8081
 
 // Authentication and Authorization Middleware
 var auth = function(req, res, next) {
-    if (req.session.user_id && req.session.org_id)
+    if (req.session.username)
         return next();
     else
-        next()
+        res.redirect("/")
 };
 
 //attempt to connect to the database

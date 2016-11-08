@@ -1,81 +1,43 @@
-<p class="text-center">{{contact.user.phone_number}}</p>
-<p class="text-center">{{contact.user.user_name}}</p>
-
-<div class="row">
-	<div class="col-lg-6">
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="box">
-					<div class="box-header">
-						<h2 class="box-title">available groups</h2>
-					</div>
-					<!-- /.box-header -->
-					<div class="box-body">
-						<div class="col-lg-12">
-							<table class="table datatable table-bordered table-hover">
-								<thead>
-									<tr>
-										<th>group name</th>
-									</tr>
-								</thead>
-								<tbody>
-									{{#each contact.availableGroups as |group|}}
-									<tr>
-										<td>{{group.name}}</td>
-									</tr>
-									{{/each}}
-								</tbody>
-
-							</table>
-						</div>
-					</div>
-
-				</div>
-
-			</div>
-		</div>
-
-
-	</div>
-	<div class="col-lg-6">
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="box">
-					<div class="box-header">
-						<h2 class="box-title">joined groups</h2>
-					</div>
-					<!-- /.box-header -->
-					<div class="box-body">
-						<div class="col-lg-12">
-							<table class="table datatable table-bordered table-hover">
-								<thead>
-									<tr>
-										<th>group name</th>
-									</tr>
-								</thead>
-								<tbody>
-									{{#each contact.joinedGroups as |group|}}
-									<tr>
-										<td>{{group.group_name}}</td>
-									</tr>
-									{{/each}}
-								</tbody>
-
-							</table>
-						</div>
-					</div>
-
-				</div>
-
-			</div>
-		</div>
-	</div>
-	
-</div>
-
-
-
-
-
-
-
+<div class="col-md-12">
+          <!-- Custom Tabs -->
+          <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#tab_1" data-toggle="tab">General</a></li>
+              <li><a href="#tab_b" data-toggle="tab">Rates</a></li>
+              <li><a href="#tab_2" data-toggle="tab">Debits</a></li>
+              <li><a href="#tab_3" data-toggle="tab">Credits</a></li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  Actions <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="{{newpayment}}">Add payment</a></li>
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="{{newrate}}">Add Rate</a></li>
+                  <li role="presentation" class="divider"></li>
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="{{newcharge}}">Add charge</a></li>
+                </ul>
+              </li>
+              
+              {{!-- <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li> --}}
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active" id="tab_1">
+                {{>accounts/general}}
+              </div>
+              <div class="tab-pane" id="tab_b">
+                {{>accounts/rates}}
+              </div>
+              <!-- /.tab-pane -->
+              <div class="tab-pane" id="tab_2">
+                {{>accounts/payments}}
+              </div>
+              <!-- /.tab-pane -->
+              <div class="tab-pane" id="tab_3">
+                {{>accounts/charges}}
+              </div>
+              <!-- /.tab-pane -->
+            </div>
+            <!-- /.tab-content -->
+          </div>
+          <!-- nav-tabs-custom -->
+        </div>

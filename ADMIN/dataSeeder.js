@@ -43,9 +43,11 @@ var timeId = cassandra.types.TimeUuid //new instance based on current date timeI
 
 var creator = function() {
     // constants
-    const group = {
-        user_name: "sirbranson67@hmail.com",
-        password: "a10101995"
+    const rate = {
+        organisation: "aedf5370-a200-11e6-9ee5-07c283b15ebb",
+        rate_id: timeId.now(),
+        percentage: "3",
+        active: true
     }
 
 
@@ -53,8 +55,8 @@ var creator = function() {
         // administration
         cassie.insertMaker({
             keyspace: "sms_master",
-            table: "super_admins",
-            record: group
+            table: "organisation_rates",
+            record: rate
         })
 
     ]

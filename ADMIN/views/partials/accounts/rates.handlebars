@@ -1,0 +1,28 @@
+<table class="table datatable table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>Set Date</th>
+								<th>Percentage</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each rates as |rate|}}
+							<tr>
+								<td>{{rate.date}}</td>
+								<td>{{rate.percentage}} <small>%</small></td>
+								<td>
+									{{#if rate.active}}
+										<a class="btn btn-success btn-xs" href="#">Activated</a>
+									{{else}}
+										<a class="btn btn-info btn-xs" href="{{rate.activate}}">Activate</a>
+									{{/if}}
+									
+								</td>								
+							</tr>
+							{{/each}}
+
+
+						</tbody>
+
+					</table>
