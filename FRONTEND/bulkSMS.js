@@ -370,7 +370,11 @@ module.exports = function(app) {
                 res.render('new_message/send_report', {
                     session: req.session,
                     instance: instance,
-                    layout: "bulkSMS"
+                    layout: "bulkSMS",
+                    session: req.session,
+                    status: "Online",
+                    page: "Sending Results",
+                    back: "Send message",
                 });
             })
 

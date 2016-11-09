@@ -206,6 +206,7 @@ module.exports = function(app) {
                     var messageOptions = {
                         req: req,
                         res: res,
+                        app: app,
                         subject: req.session.message.title,
                         prefix: req.session.message.prefix,
                         body: req.session.message.message
