@@ -201,11 +201,12 @@ module.exports = function(app) {
                     method: "post",
                     fields: [{
                         name: "Subject",
-                        type: "text"
+                        type: "text",
+                        placeholder: "What is this message about?"
                     }, {
                         name: "Prefix",
                         type: "text",
-                        placeholder: "Good morning, hey, Praise the lord....."
+                        placeholder: "hey , + ${firstname}"
                     }, {
                         name: "Select Contacts",
                         select: true,
@@ -334,6 +335,7 @@ module.exports = function(app) {
                         })
                         instance.messages_sum = accounting.toFixed(Number(sum), 2);
                         instance.messages = result.rows
+                        console.log(result.rows)
                             // console.log(instance.messages)
                         next()
                     })
@@ -834,59 +836,5 @@ module.exports = function(app) {
         });
 
     })
-
-}
-
-
-// africasTalking 
-// We need this to build our post string
-var querystring = require('querystring');
-var https = require('https');
-// Your login credentials
-
-// function getUsernamePassword(id, cb) {
-//     client.execute("select * from sms_master.org_details;", function(err, results) {
-//         console.log(results)
-//         assert.ifError(err)
-//             // body...
-//         cb(err, [results.rows[0].username, results.rows[0].key])
-//     })
-// }
-
-
-function sendMessage(dataArray, cb) {
-
-    console.log(dataArray)
-
-    // Define the recipient numbers in a comma separated string
-    // Numbers should be in international format as shown
-    var to = dataArray[0]
-
-    // And of course we want our recipients to know what we really do
-    var message = dataArray[1];
-
-    var postData = {
-        "message": message,
-        "recipient": to,
-        "username": "Branson",
-        "apikey": "908b353c4496d48ab1167ee4d2ffae1477059578",
-        "senderId": "DC-THETA"
-    }
-
-    // console.log(postData)
-
-    request.post({
-        url: 'http://mobilesasa.com/sendsmsjson.php',
-        body: postData,
-        json: true
-    }, function(error, response, body) {
-        // console.log(body)
-        assert.ifError(error)
-            // if (!error && response.statusCode == 200) {
-            //     console.log(body)
-            // }
-        cb(null, body)
-    })
-
 
 }

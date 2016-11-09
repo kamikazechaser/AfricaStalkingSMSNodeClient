@@ -2,20 +2,22 @@
 						<thead>
 							<tr>
 								<th>Time</th>
-								<th>Ammount</th>
+								{{!-- <th>Ammount</th> --}}
 								<th>Bill</th>
-								<th>Profit</th>
+								{{!-- <th>Profit</th> --}}
 								<th>Reason</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
 							{{#each charges as |charge|}}
 							<tr>
 								<td>{{charge.time}}</td>
-								<td>{{charge.cost}}</td>
+								{{!-- <td>{{charge.cost}}</td> --}}
 								<td>{{charge.bill}}</td>
-								<td>{{charge.profit}}</td>
+								{{!-- <td>{{charge.profit}}</td> --}}
 								<td><b>{{charge.admin}}</b> Sent <b>{{charge.contactsReached}}</b> messages</td>
+								<td><a href="{{view_link}}" class="btn btn-info btn-xs">More details</a></td>
 							</tr>
 							{{/each}}
 						</tbody>

@@ -105,7 +105,6 @@ app.set('view engine', 'handlebars');
 const port = 8080
 
 
-require("./website")(app)
 
 
 // Authentication and Authorization Middleware
@@ -129,6 +128,8 @@ client.connect((err) => {
     app.locals.auth = auth
     app.locals.auth = auth
     app.locals.janitor = janitor
+
+    require("./website")(app)
 
     require("./bulkSMS")(app)
 

@@ -72,11 +72,25 @@ module.exports = function(app) {
                 assert.ifError(err)
                 console.log("batch was successfull")
                     // sent email verification page
-                res.redirect("/verifypassword/" + req.body.email)
+                client.execute("select * from admins_for_organisation where user_name=?", [req.body.email], (err, admins_for_organisations) => {
+                    assert.ifError(err)
+                        // check the number of orgs, start with only one and send there direct
+                    console.log(admins_for_organisations.rows)
+                    var sessionData = admins_for_organisations.rows[0]
+                    req.session.user_id = sessionData.user_name
+                    req.session.org_id = sessionData.organisation
+                    req.session.p_pic = "Profile_avatar_placeholder_large.png"
+                    client.execute("select * from organisations where id=?", [sessionData.organisation], (err, organisation) => {
+                        assert.ifError(err)
+                        console.log("organisation details", organisation.rows)
+                        req.session.org_name = organisation.rows[0].name;
+                        res.redirect("/dashboard")
+                    })
+                })
             })
         })
 
-    app.route("/verifypassword/:email")
+    app.route("/verifyMAIL/:email")
         .get((req, res) => {
             client.execute("select * from registering_users where email=? ALLOW FILTERING", [req.params.email], (err, results) => {
                 assert.ifError(err)
@@ -91,10 +105,11 @@ module.exports = function(app) {
             console.log(req.body)
             client.execute("select * from registering_users where email=? ALLOW FILTERING", [req.params.email], (err, results) => {
                 assert.ifError(err)
+                console.log(results.rows)
                     // console.log(results.rows)
                     // check if thats the correct password
                 console.log(results.rows[0].password, req.body.password)
-                if (results.rows[0].password === req.body.password) {
+                if (results.rows[0].password == req.body.password) {
                     // get the organisation the user is registered to,
                     // if its only one, take direct and set that to the session
                     // if many, show a list of the organisations 
