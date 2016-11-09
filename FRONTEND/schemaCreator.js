@@ -3,9 +3,11 @@ const assert = require("assert")
 const async = require("async")
 const cassie = require("./query_creator")
 
+// var contactPoints = ["192.241.151.182", "192.241.152.171"],
+var contactPoints = ["127.0.0.1"]
 
 var connectionOptions = {
-    contactPoints: ["192.241.151.182", "192.241.152.171"],
+    contactPoints: contactPoints,
     keyspace: 'system'
 };
 
