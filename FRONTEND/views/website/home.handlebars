@@ -95,28 +95,49 @@
               <div class="box-body">
               <div class="form-group">
                   <label for="exampleInputEmail1">Full names</label>
-                  <input type="text" class="form-control" name="name" id="exampleInputEmail1" placeholder="Your full names" required>
+                  <input type="text" class="form-control" name="name" id="exampleInputEmail1" placeholder="" required>
                 </div>
                 <div class="form-group">
                   <label for="exampleInputEmail1">Organisation</label>
-                  <input type="text" class="form-control" name="organisation" id="exampleInputEmail1" placeholder="Name of the organisation" required>
+                  <input type="text" class="form-control" name="organisation" id="exampleInputEmail1" placeholder="" required>
                 </div>
                 
                 <div class="form-group">
-                  <label for="exampleInputEmail1">Contact Phone Number</label>
-                  <input type="email" class="form-control" name="phone" id="exampleInputEmail1" placeholder="Your email address" required>
+                  <label for="exampleInputEmail1">Phone Number</label>
+                  <input type="number" class="form-control" name="phone" id="exampleInputEmail1" placeholder="" required>
                 </div>
 
                 <div class="form-group">
                   <label for="exampleInputEmail1">Login Credentials</label>
-                  <input type="email" class="form-control" name="email" id="exampleInputEmail1" placeholder="Email address" required>
+                  <input type="email" class="form-control" name="email" id="exampleInputEmail1" placeholder="Email Address" required>
+
                 </div>
                 
                 <div class="form-group">
                   {{!-- <label for="exampleInputPassword1">Password</label> --}}
-                  <input type="password" autocomplete="new-password" class="form-control" name="password" id="exampleInputPassword1" placeholder="Password" required>
+                  <input type="password" autocomplete="new-password" class="form-control" name="password" id="password" placeholder="Password" required>
+                </div>
+
+                <div class="form-group">
+                  {{!-- <label for="exampleInputPassword1">Password</label> --}}
+                  <input type="password" autocomplete="new-password" class="form-control" name="password" id="confirm_password" placeholder="Verify Password" required>
                 </div>
               </div>
+              <script type="text/javascript">
+                var password = document.getElementById("password")
+                  , confirm_password = document.getElementById("confirm_password");
+
+                function validatePassword(){
+                  if(password.value != confirm_password.value) {
+                    confirm_password.setCustomValidity("Passwords Don't Match");
+                  } else {
+                    confirm_password.setCustomValidity('');
+                  }
+                }
+
+                password.onchange = validatePassword;
+                confirm_password.onkeyup = validatePassword;
+              </script>
               <!-- /.box-body -->
 
               <div class="box-footer">
