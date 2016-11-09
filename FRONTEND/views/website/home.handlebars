@@ -1,4 +1,5 @@
 {{>head}}
+<link rel="stylesheet" type="text/css" href="theme.css">
 <body class="skin-blue layout-top-nav">
   <div class="wrapper">
 
@@ -6,7 +7,7 @@
     <nav class="navbar navbar-static-top">
       <div class="containerx">
         <div class="navbar-header">
-          <a href="../../index2.html" class="navbar-brand">Sabek<b>Systems</b></a>
+          <a class="navbar-brand">Sabek<b>Systems</b></a>
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
             <i class="fa fa-bars"></i>
           </button>
@@ -22,7 +23,7 @@
             </div>
 
             <div class="form-group">
-              <input type="password"  class="form-control" id="navbar-search-input" name="password" placeholder="Password" required>
+              <input type="password"  class="form-control" id="navbar-search-input" name="password" placeholder="Password" autocomplete="new-password" required>
             </div>
             <button class="btn btn-flat" type="submit">login</button>
           </form>
@@ -91,26 +92,25 @@
             </div>
             <!-- /.box-header -->
             <!-- form start -->
-            <form role="form" action="" method="post" autocomplete="off">
+            <form role="form" action="" method="post">
               <div class="box-body">
               <div class="form-group">
                   <label for="exampleInputEmail1">Full names</label>
-                  <input type="text" class="form-control" name="name" id="exampleInputEmail1" placeholder="" required>
+                  <input type="text" class="form-control" name="name" id="exampleInputEmail1" placeholder="Full documented names" required>
                 </div>
                 <div class="form-group">
                   <label for="exampleInputEmail1">Organisation</label>
-                  <input type="text" class="form-control" name="organisation" id="exampleInputEmail1" placeholder="" required>
+                  <input type="text" class="form-control" name="organisation" id="exampleInputEmail1" placeholder="What organisation are you representing?" required>
                 </div>
                 
                 <div class="form-group">
                   <label for="exampleInputEmail1">Phone Number</label>
-                  <input type="number" class="form-control" name="phone" id="exampleInputEmail1" placeholder="" required>
+                  <input type="number" class="form-control" name="phone" id="exampleInputEmail1" placeholder="Official phone number we can use to contact you" required>
                 </div>
 
                 <div class="form-group">
                   <label for="exampleInputEmail1">Login Credentials</label>
                   <input type="email" class="form-control" name="email" id="exampleInputEmail1" placeholder="Email Address" required>
-
                 </div>
                 
                 <div class="form-group">
@@ -148,12 +148,23 @@
       </div>
       <!-- /.content -->
 
-      {{!-- the rest of the page --}}
-      <h2 class="text-center" style="margin-bottom: 40px"><b>What do we have to offer? </b></h2>
 
-      <div class="container text-center">
 
-      	<div class="row">
+
+
+
+
+
+      {{!-- end of the adverts of what we do --}}
+    </div>
+    <!-- /.container -->
+
+          {{!-- the rest of the page --}}
+      <h2 class="text-center" style="margin-bottom: 40px">What do we have to offer?</h2>
+
+      <div class="text-center features-menu">
+      <div class="container">
+        <div class="row">
             <div class="col-xs-12 col-sm-6 col-md-4">
                 <div class="feature-item animated fadeInUp delay-3">
                     <i class="fa fa-css3"></i>
@@ -202,13 +213,53 @@
          
         </div>
       </div>
+        
+      </div>
 
 
+      <div class="section bg-grey">
+    <div class="container">
+            <h2 class="text-center" style="margin-bottom: 40px">Issues &amp; Support</h2>
+
+            <p class="lead text-center">
+                For SMS support, please call +254 711 657 108
+                {{!-- <a href="https://github.com/almasaeed2010/AdminLTE/issues">Github repository</a> --}}
+                and state your issue, suggestion, or contribution.
+            </p>
+
+            <p>
+                We try our best to provide support to the users of our BULK SMS. Thanks to many of our users, SABEK has
+                a great community support. We will try to respond to your post as soon as possible.
+                For a faster response, please include as much information about your issue as possible.
+            </p>
+        </div>
+    </div>
 
 
-      {{!-- end of the adverts of what we do --}}
+    {{!-- testimonials --}}
+    <div class="testimonials">
+    <div class="container">
+
+        <h2 class="text-center">What Others Are Saying</h2>
+
+        <div class="row">
+
+            <div class="col-md-4">
+                <div class="testimonial-item">
+                    <div class="testimonial-img"></div>
+                    <p class="testimonial-content">
+                        @BransonGitomeh and his team has done a great design On the BULKSMS Solution. Loved it.
+                        <br><br>
+                        ─ @evansmbugua
+                    </p>
+                </div>
+            </div>
+            <!-- /.col-md-4 -->
+        </div>
+        <!-- /.row -->
     </div>
     <!-- /.container -->
+</div>
   </div>
   <!-- /.content-wrapper -->
   <footer class="main-footer">
