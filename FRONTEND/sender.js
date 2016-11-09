@@ -55,56 +55,56 @@ module.exports = function(numbers, messageOptions, cb) {
                     }
 
                     // send the message
-                    // sendMessage([completeData.number, completeData.message], (err, results) => {
-                    //     assert.ifError(err)
-
-
-                    // })
-
-                    var results = {
-                        response: [{
-                            phonenumber: completeData.number,
-                            status: '1701',
-                            messageId: '147868639504c9510736dbe1e46fec',
-                            cost: '0.8',
-                            message: 'success'
-                        }]
-                    }
-
-                    console.log(results)
-                    completeData.sending_results = results.response[0]
-                    sendresults.push(completeData)
-
-                    console.log("cost of this message is " + percentage * completeData.sending_results.cost)
-                    const message = {
-                        id: timeId.now(),
-                        message: completeData.message,
-                        instance: instance.id,
-                        cost: Number(completeData.sending_results.cost)
-                    }
-
-                    // console.log(message)
-
-                    batch.push(cassie.insertMaker({
-                        keyspace: "sms_master",
-                        table: "quick_sent_messages",
-                        record: message
-                    }))
-
-                    batch.push(cassie.insertMaker({
-                        keyspace: "sms_master",
-                        table: "contacts_quick_messages",
-                        record: {
-                            id: timeId.now(),
-                            contact: completeData.id,
-                            quick_message: message.id
-                        }
-                    }))
-
-                    client.batch(batch, { prepare: true }, (err, results) => {
+                    sendMessage([completeData.number, completeData.message], (err, results) => {
                         assert.ifError(err)
-                        nextNumberCb()
+                            // var results = {
+                            //     response: [{
+                            //         phonenumber: completeData.number,
+                            //         status: '1701',
+                            //         messageId: '147868639504c9510736dbe1e46fec',
+                            //         cost: '0.8',
+                            //         message: 'success'
+                            //     }]
+                            // }
+
+                        console.log(results)
+                        completeData.sending_results = results.response[0]
+                        sendresults.push(completeData)
+
+                        console.log("cost of this message is " + percentage * completeData.sending_results.cost)
+                        const message = {
+                            id: timeId.now(),
+                            message: completeData.message,
+                            instance: instance.id,
+                            cost: Number(completeData.sending_results.cost)
+                        }
+
+                        // console.log(message)
+
+                        batch.push(cassie.insertMaker({
+                            keyspace: "sms_master",
+                            table: "quick_sent_messages",
+                            record: message
+                        }))
+
+                        batch.push(cassie.insertMaker({
+                            keyspace: "sms_master",
+                            table: "contacts_quick_messages",
+                            record: {
+                                id: timeId.now(),
+                                contact: completeData.id,
+                                quick_message: message.id
+                            }
+                        }))
+
+                        client.batch(batch, { prepare: true }, (err, results) => {
+                            assert.ifError(err)
+                            nextNumberCb()
+                        })
+
                     })
+
+
 
 
                 })
