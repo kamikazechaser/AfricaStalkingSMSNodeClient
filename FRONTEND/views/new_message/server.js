@@ -67,26 +67,25 @@ module.exports = function(app) {
         })
 
     app.get("/new_message/selectGroup", function(req, res) {
-        client.execute("select * from sms_master.groups", function(err, result) {
-            if (!err) {
+        client.execute("select * from sms_master.groups where organisation=? allow filtering", [req.session.org_id], function(err, result) {
+            assert.ifError(err)
                 // console.log(result)
                 // get number of contacts in group first
-                async.each(result.rows, (row, nextRow) => {
-                    client.execute("select * from sms_master.groups_per_contact where group=? allow FILTERING;", [row.id], function(err, result) {
-                        assert.ifError(err)
-                        row.send_link = "/send_message/" + row.id
-                        row.memberNumber = result.rows.length
-                        row.specify_members_link = "/controlled_send_message/" + row.id
-                        nextRow()
-                    })
-                }, function(argument) {
-                    res.render('new_message/selectGroup', {
-                        session: req.session,
-                        groups: result.rows,
-                        layout: "bulkSMS"
-                    });
+            async.each(result.rows, (row, nextRow) => {
+                client.execute("select * from sms_master.groups_per_contact where group=? allow FILTERING;", [row.id], function(err, result) {
+                    assert.ifError(err)
+                    row.send_link = "/send_message/" + row.id
+                    row.memberNumber = result.rows.length
+                    row.specify_members_link = "/controlled_send_message/" + row.id
+                    nextRow()
                 })
-            }
+            }, function(argument) {
+                res.render('new_message/selectGroup', {
+                    session: req.session,
+                    groups: result.rows,
+                    layout: "bulkSMS"
+                });
+            })
         })
     })
 

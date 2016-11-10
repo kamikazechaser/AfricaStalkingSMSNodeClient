@@ -1,0 +1,19 @@
+<table class="table datatable table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>Time</th>
+								<th>Ammount</th>
+								<th>Sender_id</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each sender_ids as |id|}}
+							<tr>
+								<td>{{id.date}}</td>
+								<td>{{id.cost}}</td>
+								<td>{{id.sender_id}}</td>
+							</tr>
+							{{/each}}
+						</tbody>
+
+					</table>
